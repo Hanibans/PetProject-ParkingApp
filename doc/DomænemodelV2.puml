@@ -1,0 +1,43 @@
+@startuml
+!pragma layout smetana
+
+object Bruger{
+- name
+- password
+}
+object Parkering{
+- availbility
+- capacity
+}
+object Zoner{
++ color markings
+}
+object Kort{
+ + markings
+}
+object Bil{
+- license
+}
+object Betaling{
+- price
+- startTime
+- endTime
+}
+object BilType{
+- name id
+}
+
+
+Bruger --> Bil  : has-a
+Bil --> BilType  : has-a
+BilType --> Zoner
+Bruger --> Kort  : has-a
+Kort ---> Zoner : shows
+Zoner ---> Parkering : shows
+
+Parkering --> Betaling : has-a
+
+
+
+
+@enduml

@@ -1,0 +1,46 @@
+@startuml
+!pragma layout smetana
+
+object User{
+- phoneNumber
+- mail
+- password
+}
+object Parking{
+- parkingStartTime
+- parkingEndTime
+}
+object Zone{
++ name
++ color
++ pricePerHour
+- totalCapacity
+- parkingSpotsAvailability
+}
+object Map{
+ + zones
+}
+object Car{
+- licensePlate
+- carType
+}
+object Payment{
+- totalCost
+}
+object ParkingSpotType{
+- name
+}
+
+
+User "1" -- "1..*" Car  : owns
+Car "1" -- "1..*" ParkingSpotType  : allowed in
+User "1" -- "1" Map  : views
+Map "1" - "1..*" Zone : shows
+Zone "1" --- "0..*" Parking : contains
+Parking "1" - "1..*" ParkingSpotType : has
+Parking "1" -- "1" Payment : results in
+Car "1" --- "0..*" Parking : parks
+
+
+
+@enduml

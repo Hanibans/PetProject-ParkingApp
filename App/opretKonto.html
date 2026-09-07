@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Opret bruger</title>
+    <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
+
+<div class="login-page">
+    <!-- Logo -->
+    <div class="logo">
+        <img src="../img/S&N-logo.png" alt="Logo">
+    </div>
+
+    <!-- create account box -->
+    <div class="login-box">
+
+        <h1>Opret konto</h1>
+
+        <p class="subtitle">
+            Indtast venligst dine oplysninger for at tilmelde dig
+        </p>
+
+        <form action="">
+
+            <!-- Email -->
+            <div class="input-group">
+                <label for="email">E-mail adresse:</label>
+                <input
+                        type="email"
+                        id="email"
+                        placeholder="eksempel@gmail.com"
+                >
+            </div>
+
+            <!-- number -->
+            <div class="telefon-nummer">
+                <label for="telefon">Telefonnummer:</label>
+                <select name="telefon" >
+                    <option value="dk">+45</option>
+                </select>
+                <input
+                        type="tel"
+                        id="telefon"
+                        placeholder="Indtast dit telefonnummer"
+                >
+            </div>
+
+            <div class="input-group">
+                <div class="password-label">
+                    <label for="password">Adgangskode:</label>
+                </div>
+                <input type="password" id="password" placeholder="••••••">
+            </div>
+
+            <!-- opret button -->
+            <button type="submit">Opret konto</button>
+
+        </form>
+
+    </div>
+</div>
 
 </body>
 </html>

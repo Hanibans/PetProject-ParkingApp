@@ -8,12 +8,11 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.login-page {
+.login-page, .create {
     width: 100%;
     min-height: 100vh;
 
-    /* Dit baggrundsbillede */
-    background-image: url("../img/parking-background.jpg");
+    background-image: url("../src/img/parking-background.jpg");
     background-size: cover;
     background-position: center;
 
@@ -35,7 +34,7 @@ body {
 }
 
 .logo img {
-    width: 100px;
+    width: 200px;
     height: auto;
 }
 
@@ -76,6 +75,7 @@ body {
     padding: 60px 27px 30px;
 
     margin-top: 15px;
+    margin-bottom: 400px;
 
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
@@ -117,7 +117,8 @@ label {
 }
 
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="tel"] {
     width: 100%;
     height: 34px;
 
@@ -138,7 +139,8 @@ input::placeholder {
 }
 
 input[type="email"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="tel"]{
     border-color: #5b8df7;
 }
 
@@ -162,6 +164,34 @@ input[type="password"]:focus {
 
 .password-label a:hover {
     text-decoration: underline;
+}
+
+
+
+.telefon-nummer select {
+    height: 34px;
+    background: #f0f2f5;
+    border: 1px solid #d6d8dc;
+    border-radius: 6px;
+    padding: 0 8px;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.telefon-nummer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.telefon-nummer label {
+    flex-basis: 100%;
+}
+
+
+.telefon-nummer input {
+    flex: 1;
 }
 
 /* =========================
@@ -214,23 +244,37 @@ button:hover {
     background: #4778ed;
 }
 
+.telefon-nummer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 35px;
+}
+
 /* =========================
-   CREATE ACCOUNT
+   CREATE ACCOUNT LINK
 ========================= */
 
 .create-account {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    align-items: center;
+    gap: 5px;
 
-    margin-top: 30px;
+    margin-top: 25px;
 
-    font-size: 12px;
+    font-size: 13px;
     color: #777;
+    text-align: center;
 }
 
 .create-account a {
-    color: #4e83f4;
+    color: #5b88f5;
     font-weight: bold;
+    text-decoration: none;
+}
+
+.create-account a:hover {
     text-decoration: underline;
 }

@@ -13,7 +13,7 @@ body {
     min-height: 100vh;
 
     /* Dit baggrundsbillede */
-    background-image: url("parking-background.jpg");
+    background-image: url("../img/parking-background.jpg");
     background-size: cover;
     background-position: center;
 

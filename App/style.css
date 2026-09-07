@@ -1,0 +1,236 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.login-page {
+    width: 100%;
+    min-height: 100vh;
+
+    /* Dit baggrundsbillede */
+    background-image: url("parking-background.jpg");
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: relative;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.logo {
+    margin-top: 50px;
+    text-align: center;
+    z-index: 2;
+}
+
+.logo img {
+    width: 100px;
+    height: auto;
+}
+
+.logo-symbol {
+    position: relative;
+    width: 75px;
+    height: 55px;
+    margin: 0 auto -5px;
+}
+
+.logo-symbol span {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+}
+
+/* De fire farvede figurer */
+
+.logo-text {
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    letter-spacing: -2px;
+}
+
+/* =========================
+   LOGIN BOX
+========================= */
+
+.login-box {
+    width: 315px;
+    min-height: 525px;
+
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 60px 27px 30px;
+
+    margin-top: 15px;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Overskrift */
+
+.login-box h1 {
+    text-align: center;
+    font-size: 23px;
+    color: #292929;
+
+    margin-bottom: 12px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 15px;
+    color: #666;
+
+    margin-bottom: 45px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+.input-group {
+    margin-bottom: 35px;
+}
+
+label {
+    font-size: 16px;
+    color: #555;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 7px;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    height: 34px;
+
+    background: #f0f2f5;
+
+    border: 1px solid #d6d8dc;
+    border-radius: 6px;
+
+    padding: 0 12px;
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #5b8df7;
+}
+
+/* =========================
+   PASSWORD
+========================= */
+
+.password-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 7px;
+}
+
+.password-label a {
+    font-size: 12px;
+    color: #777;
+    text-decoration: none;
+}
+
+.password-label a:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   REMEMBER
+========================= */
+
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-top: 15px;
+}
+
+.remember input {
+    width: 16px;
+    height: 16px;
+}
+
+.remember label {
+    font-size: 13px;
+    color: #777;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+button {
+    display: block;
+
+    width: 157px;
+    height: 36px;
+
+    margin: 40px auto 0;
+
+    background: #5b88f5;
+    color: white;
+
+    border: none;
+    border-radius: 7px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4778ed;
+}
+
+/* =========================
+   CREATE ACCOUNT
+========================= */
+
+.create-account {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    margin-top: 30px;
+
+    font-size: 12px;
+    color: #777;
+}
+
+.create-account a {
+    color: #4e83f4;
+    font-weight: bold;
+    text-decoration: underline;
+}

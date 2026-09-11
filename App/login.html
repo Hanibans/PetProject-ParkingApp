@@ -73,32 +73,29 @@
     const form = document.querySelector("form");
 
     form.addEventListener("submit", function (e) {
-      //e.preventDefault(); // stop the page from reloading
+        e.preventDefault();
 
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        if (email === "" || password === "") {
-            alert("Udfyld venligst både email og adgangskode.");
+        const savedUser = localStorage.getItem("user");
+
+        if (savedUser === null) {
+            alert("Der findes ingen bruger. Opret en konto først.");
             return;
         }
 
-        // "Husk adgangskode" checkbox
-        const remember = document.getElementById("remember").checked;
-        if (remember) {
-            localStorage.setItem("savedEmail", email);
-        }
+        // Lav JSON tilbage til et javaccript-objekt
+        const user = JSON.parse(savedUser);
 
-        // pretend login succeeded, go to menu
-        window.location.href = "map.html";
-    });
-
-    // auto-fill email if it was saved earlier
-    window.addEventListener("DOMContentLoaded", function () {
-        const saved = localStorage.getItem("savedEmail");
-        if (saved) {
-            document.getElementById("email").value = saved;
+        if (email === user.email && password === user.password) {
+            alert("Login lykkedes!");
+            window.location.href = "map.html";
+        } else {
+            alert("Forkert email eller adgangskode.");
         }
+        console.log(savedUser);
+
     });
 
 </script>

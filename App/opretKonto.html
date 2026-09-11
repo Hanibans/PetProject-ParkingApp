@@ -88,16 +88,29 @@
             alert("Adgangskoden skal være mindst 6 tegn.");
             return;
         }
-        if (phone === "") {
-            alert("Indtast dit telefonnummer.");
-            return;
-        }
-        if (!phone.includes()) {
-            alert("Indtast dit telefonnummer.");
+
+        if (phone.length !== 8) {
+            alert("Telefonnummer skal indeholde 8-cifre!");
             return;
         }
 
+
+        // js objekt til at gemme vores user
+        const user = {
+            email: email,
+            phone: phone,
+            password: password
+        };
+
+        // Gem objektet som JSON i localStorage
+        localStorage.setItem("user", JSON.stringify(user));
+        console.log(user.email);
+        console.log(user);
+
+        alert("Din konto er oprettet!");
+
         window.location.href = "map.html";
+
     });
 </script>
 

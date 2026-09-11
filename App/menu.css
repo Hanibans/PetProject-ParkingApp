@@ -110,9 +110,9 @@ h1 {
 .bottom-buttons {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 50px;
     margin-top: 52px;
-    margin-bottom: 100px;
+    margin-bottom: 150px;
 }
 
 .support-button,
@@ -131,4 +131,9 @@ h1 {
     box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.3);
 
     cursor: pointer;
+}
+
+
+.support-button{
+    background-color: #91dd72;
 }

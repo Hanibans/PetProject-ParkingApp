@@ -49,6 +49,8 @@
                         type="tel"
                         id="telefon"
                         placeholder="Indtast dit telefonnummer"
+                        maxlength="8"
+                        inputmode="numeric"
                 >
             </div>
 
@@ -66,6 +68,38 @@
 
     </div>
 </div>
+
+
+<script>
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("telefon").value;
+        const password = document.getElementById("password").value;
+
+        if (!email.includes("@")) {
+            alert("Indtast en gyldig email.");
+            return;
+        }
+        if (password.length < 6) {
+            alert("Adgangskoden skal være mindst 6 tegn.");
+            return;
+        }
+        if (phone === "") {
+            alert("Indtast dit telefonnummer.");
+            return;
+        }
+        if (!phone.includes()) {
+            alert("Indtast dit telefonnummer.");
+            return;
+        }
+
+        window.location.href = "map.html";
+    });
+</script>
 
 </body>
 </html>

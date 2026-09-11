@@ -25,7 +25,7 @@
             Log venligst ind på din parkeringskonto
         </p>
 
-        <form action="menu.html">
+        <form action="map.html">
 
             <!-- Email -->
             <div class="input-group">
@@ -68,6 +68,40 @@
 
     </div>
 </div>
+
+<script>
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", function (e) {
+      //e.preventDefault(); // stop the page from reloading
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        if (email === "" || password === "") {
+            alert("Udfyld venligst både email og adgangskode.");
+            return;
+        }
+
+        // "Husk adgangskode" checkbox
+        const remember = document.getElementById("remember").checked;
+        if (remember) {
+            localStorage.setItem("savedEmail", email);
+        }
+
+        // pretend login succeeded, go to menu
+        window.location.href = "map.html";
+    });
+
+    // auto-fill email if it was saved earlier
+    window.addEventListener("DOMContentLoaded", function () {
+        const saved = localStorage.getItem("savedEmail");
+        if (saved) {
+            document.getElementById("email").value = saved;
+        }
+    });
+
+</script>
 
 </body>
 </html>

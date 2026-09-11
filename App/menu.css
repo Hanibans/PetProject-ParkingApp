@@ -18,9 +18,7 @@ body {
     align-items: center;
 }
 
-/* =========================
-   LOGO
-========================= */
+
 
 .logo {
     margin-top: 25px;
@@ -32,9 +30,7 @@ body {
     height: auto;
 }
 
-/* =========================
-   OVERSKRIFT
-========================= */
+/* Overskrift */
 
 h1 {
     font-size: 30px;
@@ -43,9 +39,7 @@ h1 {
     color: black;
 }
 
-/* =========================
-   MENU KNAPPER
-========================= */
+/* Menu knapper */
 
 .menu-button {
     width: 287px;
@@ -87,9 +81,7 @@ h1 {
     align-items: center;
 }
 
-/* =========================
-   FARVER
-========================= */
+/* Farver */
 
 .account {
     background-color: #ff575d;

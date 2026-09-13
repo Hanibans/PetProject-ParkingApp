@@ -41,15 +41,22 @@
 
 
     <div class="bottom-buttons">
-        <button class="support-button">Support</button>
-        <button class="logout-button">
-            <a href="login.html">Log ud</a></button>
+        <button class="support-button" id="support-button">Support</button>
+        <button class="logout-button" id="logout-button">Log ud</button>
     </div>
 
 </div>
 
 
 <script>
+   document.getElementById("logout-button").addEventListener("click", function () {
+       window.location.href = "login.html";
+
+   })
+
+    document.getElementById("support-button").addEventListener("click", function () {
+        window.location.href = "support.html";
+    });
 
 </script>
 

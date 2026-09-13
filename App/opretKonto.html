@@ -11,17 +11,17 @@
 <body>
 
 <div class="login-page">
-    <!-- Logo -->
+
     <div class="logo">
         <img src="../img/S&N-logo.png" alt="Logo">
     </div>
 
-    <!-- create account box -->
+
     <div class="login-box">
 
-        <a href="login.html" class="back-button">
+        <button type="button" id="back-button" class="back-button">
             <span class="arrow"></span>
-        </a>
+        </button>
 
         <h1>Opret konto</h1>
 
@@ -31,7 +31,7 @@
 
         <form action="map.html">
 
-            <!-- Email -->
+
             <div class="input-group">
                 <label for="email">E-mail adresse:</label>
                 <input
@@ -41,7 +41,7 @@
                 >
             </div>
 
-            <!-- number -->
+
             <div class="telefon-nummer">
                 <label for="telefon">Telefonnummer:</label>
                 <select name="telefon" >
@@ -63,7 +63,6 @@
                 <input type="password" id="password" placeholder="••••••">
             </div>
 
-            <!-- opret button -->
             <button type="submit" id="submit-button">Opret konto</button>
 
         </form>
@@ -75,6 +74,12 @@
 <script>
 
     const form = document.querySelector("form");
+    const backButton = document.getElementById("back-button");
+    const submitButton = document.getElementById("submit-button");
+
+    backButton.addEventListener("click", function () {
+        window.location.href = "login.html";
+    });
 
     form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -97,6 +102,28 @@
             return;
         }
 
+        // validering ift. eksisterende brugere
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+
+        const emailExists = users.some(function (u) {
+            return u.email.toLowerCase() === email.toLowerCase();
+        });
+
+        if (emailExists) {
+            alert("Der findes allerede en konto med denne email.");
+            window.location.href= "login.html";
+            return;
+        }
+
+        const phoneExists = users.some(function (u) {
+            return u.phone === phone;
+        });
+
+        if (phoneExists) {
+            alert("Der findes allerede en konto med dette telefonnummer.");
+            window.location.href= "login.html";
+            return;
+        }
 
         // js objekt til at gemme vores user
         const user = {
@@ -105,22 +132,21 @@
             password: password
         };
 
-        // Gem objektet som JSON i localStorage
-        localStorage.setItem("user", JSON.stringify(user));
+        // Tilføj den nye bruger til listen og gem den igen
+        users.push(user);
+        localStorage.setItem("users", JSON.stringify(users));
         console.log(user.email);
         console.log(user);
+        console.log(users);
 
-        alert("Din konto er oprettet!");
+        submitButton.innerHTML = "Konto oprettet!";
 
-        document.getElementById("submit-button").addEventListener("click", clickButton);
-
-        function clickButton() {
-            document.getElementById("submit-button").innerHTML = "Konto oprettet!";
-        }
-
-        window.location.href = "map.html";
+        setTimeout(function () {
+            window.location.href = "map.html";
+        }, 800);
 
     });
+
 </script>
 
 </body>

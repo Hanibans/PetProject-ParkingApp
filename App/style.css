@@ -23,9 +23,7 @@ body {
     position: relative;
 }
 
-/* =========================
-   LOGO
-========================= */
+/* logo */
 
 .logo {
     margin-top: 50px;
@@ -59,9 +57,7 @@ body {
     letter-spacing: -2px;
 }
 
-/* =========================
-   LOGIN BOX
-========================= */
+/* login */
 
 .login-box {
     width: 315px;
@@ -80,7 +76,7 @@ body {
     position: relative;
 }
 
-/* Overskrift */
+/* overskrift */
 
 .login-box h1 {
     text-align: center;
@@ -98,9 +94,7 @@ body {
     margin-bottom: 45px;
 }
 
-/* =========================
-   INPUTS
-========================= */
+/* inputs */
 
 .input-group {
     margin-bottom: 35px;
@@ -144,9 +138,7 @@ input[type="tel"]{
     border-color: #5b8df7;
 }
 
-/* =========================
-   PASSWORD
-========================= */
+/* password */
 
 .password-label {
     display: flex;
@@ -194,9 +186,7 @@ input[type="tel"]{
     flex: 1;
 }
 
-/* =========================
-   REMEMBER
-========================= */
+/* remember me */
 
 .remember {
     display: flex;
@@ -216,9 +206,7 @@ input[type="tel"]{
     color: #777;
 }
 
-/* =========================
-   BUTTON
-========================= */
+/* button */
 
 .back-button {
     position: absolute;
@@ -275,9 +263,7 @@ button:hover {
     margin-bottom: 35px;
 }
 
-/* =========================
-   CREATE ACCOUNT LINK
-========================= */
+/* create account */
 
 .create-account {
     display: flex;

@@ -16,13 +16,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+
+    padding-bottom: 40px;
+
 }
-
-
 
 .logo {
     margin-top: 25px;
-    margin-left: 200px;
 }
 
 .logo img {
@@ -85,22 +86,22 @@ h1 {
 
 .account {
     background-color: #ff575d;
-    margin-top: 0;
+    margin-top: 20px;
 }
 
 .cars {
     background-color: #91dd72;
-    margin-top: 31px;
+    margin-top: 20px;
 }
 
 .history {
     background-color: #a477ed;
-    margin-top: 35px;
+    margin-top: 20px;
 }
 
 .payment {
     background-color: #f9df76;
-    margin-top: 33px;
+    margin-top: 20px;
 }
 
 /* =========================
@@ -111,8 +112,7 @@ h1 {
     display: flex;
     justify-content: center;
     gap: 50px;
-    margin-top: 52px;
-    margin-bottom: 150px;
+    margin-top: auto;
 }
 
 .support-button,
@@ -133,7 +133,14 @@ h1 {
     cursor: pointer;
 }
 
-
-.support-button{
+.support-button {
     background-color: #91dd72;
+}
+
+/* Media test.. */
+@media (max-width: 600px) {
+    body {
+        background-color: var(--mindfulBreak);
+    }
+
 }

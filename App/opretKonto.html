@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Opret bruger</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="colors.css">
 
 </head>
 <body>
@@ -63,7 +64,7 @@
             </div>
 
             <!-- opret button -->
-            <button type="submit">Opret konto</button>
+            <button type="submit" id="submit-button">Opret konto</button>
 
         </form>
 
@@ -72,6 +73,7 @@
 
 
 <script>
+
     const form = document.querySelector("form");
 
     form.addEventListener("submit", function (e) {
@@ -109,6 +111,12 @@
         console.log(user);
 
         alert("Din konto er oprettet!");
+
+        document.getElementById("submit-button").addEventListener("click", clickButton);
+
+        function clickButton() {
+            document.getElementById("submit-button").innerHTML = "Konto oprettet!";
+        }
 
         window.location.href = "map.html";
 

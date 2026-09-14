@@ -7,13 +7,15 @@ public class User {
 
     private int phoneNumber;
     private String mail;
+    //private String password;
     private int licensPlate;
     private List<Car> cars = new ArrayList<>();
     private ArrayList<Car> license = new ArrayList<>();
 
     public User(int phoneNumber, String mail) {
-        this.phoneNumber = phoneNumber;
         this.mail = mail;
+        this.phoneNumber = phoneNumber;
+        //this.password = password;
     }
 
     public void addCarLicense(Car car) {
@@ -23,6 +25,10 @@ public class User {
     public int getPhoneNumber() {
         return phoneNumber;
     }
+
+    /*public String getPassword() {
+        return password;
+    }*/
 
     public String getMail(){
         return mail;

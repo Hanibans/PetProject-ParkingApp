@@ -7,10 +7,13 @@ public class UserController {
     static UserService userService = new UserService();
 
     public static void setRoutes(JavalinConfig config) {
+        config.routes.get("/", ctx -> ctx.redirect("/login"));
         config.routes.post("/login", ctx -> login(ctx));
         config.routes.get("/login", ctx -> ctx.redirect("/login.html"));
         config.routes.post("/opretkonto", ctx -> createUser(ctx));
         config.routes.get("/opretkonto", ctx -> ctx.redirect("/opretKonto.html"));
+        config.routes.get("/logout", ctx -> ctx.redirect("/login"));
+        config.routes.get("/support", ctx -> ctx.redirect("/support.html"));
     }
 
     public static void login(Context ctx) {
@@ -21,7 +24,7 @@ public class UserController {
         if (user != null) {
             ctx.redirect("/map.html");
         } else {
-            ctx.status(404);
+            ctx.status(401);
             ctx.result("Forkert email eller adgangskode");
         }
     }
@@ -38,7 +41,7 @@ public class UserController {
         }
         if (password == null || !userService.validatePassword(password)) {
             ctx.status(400);
-            ctx.result("Adgangskoden skal have 8 tegn.");
+            ctx.result("Adgangskoden skal have mellem 8 og 15 tegn.");
             return;
         }
         if (phonenumber == null || phonenumber.length() != 8) {

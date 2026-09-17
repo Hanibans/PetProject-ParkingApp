@@ -35,7 +35,7 @@ public class UserService {
     }
 
     public User login(String mail, String password) {
-        if (mail == null && password == null) {
+        if (mail == null || password == null) {
             System.out.println("no login!");
             return null;
         }

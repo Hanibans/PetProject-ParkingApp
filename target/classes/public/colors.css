@@ -1,0 +1,32 @@
+:root {
+    /* ---------- PRIMARY COLOURS ---------- */
+    --businessBlue: #0038A8;
+    --businessBlueLight: #0C53ED;
+    --campusGreen: #ACB504;
+    --sunlitEnergy: #E8D285;
+    --daylight: #F8EDCA;
+    --academicFire: #FE4C61;
+    --studentsBlush: #FCA28A;
+    --poolsideStudy: #33ABB5;
+    --poolsideStudyLight: #33ABB550;
+    --pencilGrey: #333333;
+
+    /* ---------- SECONDARY COLOURS ---------- */
+    --stickyNote: #EBD93B;            /* geekType: TINKERER */
+    --cramSession: #50027A;           /* geekType: ACHIEVER */
+    --libraryMint: #B0DEB7;           /* geekType: THEORIST */
+    --inTheZone: #00256B;             /* geekType: OUTSIDER_GENIUS */
+    --mindfulBreak: rgba(119, 0, 188, 0.83);          /* geekType: KNOW_IT_ALL */
+    --mindfulBreakLight: #dbc1fb;
+
+    --graduationDay: #FFBF74;         /* motivationType: CAREER_CHANGER */
+    --midtermMatcha: #97AF72;         /* motivationType: FELL_INTO_IT */
+    --pitchPerfect: #FC5002;          /* motivationType: ENTREPRENEUR */
+    --pitchPerfectLight: #FC500290;     /* motivationType: ENTREPRENEUR */
+    --pinkWednesday: #FF8D9D;         /* motivationType: TRUE_BELIEVER */
+
+    --notebook: #5FAA83;              /* approachType: ORGANIZER */
+    --studyBuddy: #6284BC;            /* approachType: GRINDER */
+    --teamSpirit: #6D003E;            /* approachType: TEAM_PLAYER */
+    --brainstormBubblegum: #FFD9DF;   /* approachType: CREATIVE */
+}

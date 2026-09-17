@@ -12,7 +12,7 @@ public class User {
     private List<Car> cars = new ArrayList<>();
     private ArrayList<Car> license = new ArrayList<>();
 
-    public User(String phoneNumber, String mail, String password) {
+    public User(String mail, String phoneNumber, String password) {
         this.mail = mail;
         this.phoneNumber = phoneNumber;
         this.password = password;

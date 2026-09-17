@@ -6,7 +6,7 @@ public class UserService {
     private List<User> users;
 
     public UserService() {
-        this.users = UserFactory.createUsers();
+
     }
 
     public List<User> getUsers() {
@@ -33,15 +33,15 @@ public class UserService {
         }
 
         for (User us : users) {
-            if (us.getMail().equals(mail) && us.getPassword.equals(password)) {
+            if (us.getMail().equals(mail) && us.getPassword().equals(password)) {
                 return us;
             }
         }
         return null;
     }
 
-    public User login(String mail, String telefon, String password) {
-        if (mail == null && telefon == null && password == null) {
+    public User login(String mail, String password) {
+        if (mail == null && password == null) {
             System.out.println("no login!");
             return null;
         }
@@ -63,16 +63,15 @@ public class UserService {
         }
 
         for (User us : users) {
-            if (us.getMail().equals(mail) && us.getPassword.equals(password)) {
+            if (us.getMail().equals(mail) && us.getPhoneNumber().equals(telefon) && us.getPassword().equals(password)) {
                 return null;
             }
         }
 
-        /*User user = new User(mail, telefon, password);
+        User user = new User(mail, telefon, password);
         users.add(user);
 
 
-    }*/
         return user;
     }
 

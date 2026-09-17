@@ -19,6 +19,8 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
 
+
+
         try {
             BufferedImage myPicture = ImageIO.read(new File("src/Map.png"));
 

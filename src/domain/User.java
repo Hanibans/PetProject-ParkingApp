@@ -5,30 +5,30 @@ import java.util.List;
 
 public class User {
 
-    private int phoneNumber;
+    private String phoneNumber;
     private String mail;
-    //private String password;
+    private String password;
     private int licensPlate;
     private List<Car> cars = new ArrayList<>();
     private ArrayList<Car> license = new ArrayList<>();
 
-    public User(int phoneNumber, String mail) {
+    public User(String phoneNumber, String mail, String password) {
         this.mail = mail;
         this.phoneNumber = phoneNumber;
-        //this.password = password;
+        this.password = password;
     }
 
     public void addCarLicense(Car car) {
         license.add(car);
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    /*public String getPassword() {
+    public String getPassword() {
         return password;
-    }*/
+    }
 
     public String getMail(){
         return mail;
@@ -50,7 +50,7 @@ public class User {
     public String toString() {
         return "domain.User{" +
                 "mail='" + mail + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                '}';
+                ", phoneNumber=" + phoneNumber + ", password: "+ password;
+
     }
 }

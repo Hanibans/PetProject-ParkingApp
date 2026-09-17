@@ -3,7 +3,7 @@ package domain;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import services.UserService;
+import domain.UserService;
 
 
 public class UserController {

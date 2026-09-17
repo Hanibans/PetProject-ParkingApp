@@ -6,16 +6,14 @@
     <title>Opret bruger</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="colors.css">
-
 </head>
 <body>
 
 <div class="login-page">
 
     <div class="logo">
-        <img src="../img/S&N-logo.png" alt="Logo">
+        <img src="img/S&N-logo.png" alt="Logo">
     </div>
-
 
     <div class="login-box">
 
@@ -31,28 +29,30 @@
 
         <form action="/opretkonto" method="post">
 
-
             <div class="input-group">
                 <label for="email">E-mail adresse:</label>
                 <input
                         type="email"
                         id="email"
+                        name="email"
                         placeholder="eksempel@gmail.com"
+                        required
                 >
             </div>
 
-
             <div class="telefon-nummer">
                 <label for="telefon">Telefonnummer:</label>
-                <select name="telefon" >
+                <select name="landekode">
                     <option value="dk">+45</option>
                 </select>
                 <input
                         type="tel"
                         id="telefon"
+                        name="phonenumber"
                         placeholder="Indtast dit telefonnummer"
                         maxlength="8"
                         inputmode="numeric"
+                        required
                 >
             </div>
 
@@ -60,7 +60,7 @@
                 <div class="password-label">
                     <label for="password">Adgangskode:</label>
                 </div>
-                <input type="password" id="password" placeholder="••••••">
+                <input type="password" id="password" name="password" placeholder="••••••" required>
             </div>
 
             <button type="submit" id="submit-button">Opret konto</button>
@@ -70,84 +70,10 @@
     </div>
 </div>
 
-
 <script>
-
-    const form = document.querySelector("form");
-    const backButton = document.getElementById("back-button");
-    const submitButton = document.getElementById("submit-button");
-
-
-    backButton.addEventListener("click", function () {
+    document.getElementById("back-button").addEventListener("click", function () {
         window.location.href = "login.html";
     });
-
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const email = document.getElementById("email").value;
-        const phone = document.getElementById("telefon").value;
-        const password = document.getElementById("password").value;
-
-        if (!email.includes("@")) {
-            alert("Indtast en gyldig email.");
-            return;
-        }
-        if (password.length < 8) {
-            alert("Adgangskoden skal være mindst 8 tegn.");
-            return;
-        }
-
-        if (phone.length !== 8) {
-            alert("Telefonnummer skal indeholde 8-cifre!");
-            return;
-        }
-
-        // validering ift. eksisterende brugere
-        const users = JSON.parse(localStorage.getItem("users")) || [];
-
-        const emailExists = users.some(function (u) {
-            return u.email.toLowerCase() === email.toLowerCase();
-        });
-
-        if (emailExists) {
-            alert("Der findes allerede en konto med denne email.");
-            window.location.href= "login.html";
-            return;
-        }
-
-        const phoneExists = users.some(function (u) {
-            return u.phone === phone;
-        });
-
-        if (phoneExists) {
-            alert("Der findes allerede en konto med dette telefonnummer.");
-            window.location.href= "login.html";
-            return;
-        }
-
-        // js objekt til at gemme vores user
-        const user = {
-            email: email,
-            phone: phone,
-            password: password
-        };
-
-        // Tilføj den nye bruger til listen og gem den igen
-        users.push(user);
-        localStorage.setItem("users", JSON.stringify(users));
-        console.log(user.email);
-        console.log(user);
-        console.log(users);
-
-        submitButton.innerHTML = "Konto oprettet!";
-
-        setTimeout(function () {
-            window.location.href = "map.html";
-        }, 800);
-
-    });
-
 </script>
 
 </body>

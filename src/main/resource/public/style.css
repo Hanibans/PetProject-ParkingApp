@@ -12,7 +12,7 @@ body {
     width: 100%;
     min-height: 100vh;
 
-    background-image: url("../../java/img/parking-background.jpg");
+    background-image: url("img/parking-background.jpg");
     background-size: cover;
     background-position: center;
 

@@ -6,7 +6,6 @@
     <title>Log ind</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="colors.css">
-
 </head>
 
 <body>
@@ -14,9 +13,8 @@
 <div class="login-page">
 
     <div class="logo">
-        <img src="../img/S&N-logo.png" alt="Logo">
+        <img src="img/S&N-logo.png" alt="Logo">
     </div>
-
 
     <div class="login-box">
 
@@ -33,10 +31,11 @@
                 <input
                         type="email"
                         id="email"
+                        name="email"
                         placeholder="eksempel@gmail.com"
+                        required
                 >
             </div>
-
 
             <div class="password-label">
                 <label for="password">Adgangskode:</label>
@@ -46,12 +45,13 @@
             <input
                     type="password"
                     id="password"
+                    name="password"
                     placeholder="••••••"
+                    required
             >
 
-
             <div class="remember">
-                <input type="checkbox" id="remember">
+                <input type="checkbox" id="remember" name="remember">
                 <label for="remember">Husk adgangskode</label>
             </div>
 
@@ -66,37 +66,6 @@
 
     </div>
 </div>
-
-<script>
-    const form = document.querySelector("form");
-
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        const savedUser = localStorage.getItem("user");
-
-        if (savedUser === null) {
-            alert("Der findes ingen bruger. Opret en konto først.");
-            return;
-        }
-
-        // Lav JSON tilbage til et javaccript-objekt
-        const user = JSON.parse(savedUser);
-
-        if (email === user.email && password === user.password) {
-            alert("Login lykkedes!");
-            window.location.href = "map.html";
-        } else {
-            alert("Forkert email eller adgangskode.");
-        }
-        console.log(savedUser);
-
-    });
-
-</script>
 
 </body>
 </html>

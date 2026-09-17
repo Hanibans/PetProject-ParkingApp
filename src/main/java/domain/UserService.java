@@ -2,13 +2,14 @@ package domain;
 
 import io.javalin.http.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
     private List<User> users;
 
     public UserService() {
-
+        this.users = new ArrayList<>();
     }
 
     public List<User> getUsers() {
@@ -19,15 +20,6 @@ public class UserService {
         this.users = users;
     }
 
-    public void addUser(User user) {
-        if (user == null) {
-            System.out.println("no users added");
-        }
-
-        users.add(user);
-        System.out.println(user + "added!");
-
-    }
 
     public User getUser(String mail, String telefon, String password) {
         if (mail == null && telefon == null && password == null) {
@@ -60,14 +52,8 @@ public class UserService {
     }
 
     public User createUser(String mail, String telefon, String password) {
-        if (mail == null && telefon == null && password == null) {
-            System.out.println("no user created!");
-        }
-
-        if (!validatePassword(password)){
-            Context ctx;
-            ctx.result("Password must be atleast 8 characters!");
-        }
+        if (mail == null || telefon == null || password == null) return null;
+        if (!validatePassword(password)) return null;
 
         for (User us : users) {
             if (us.getMail().equals(mail) && us.getPhoneNumber().equals(telefon) && us.getPassword().equals(password)) {
@@ -77,16 +63,13 @@ public class UserService {
 
         User user = new User(mail, telefon, password);
         users.add(user);
-
-
         return user;
     }
 
 
     public boolean validatePassword(String password) {
-        return password.length() >= 8 && password.length() <= 15;
+        return password != null && password.length() >= 8 && password.length() <= 15;
     }
-
 
 
 

@@ -14,29 +14,12 @@ body {
     height: 100vh;
 
     overflow: hidden;
-
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
 }
 
-.map {
-    width: auto;
-    height: 100%;
+#map {
+    width: 100%;
+    height: 100vh;
 }
-
-.map img {
-    width: auto;
-    height: 100%;
-
-    display: block;
-
-    /* centrerer billedet hvis det er bredere end skærmen */
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
 
 .search-bar {
     position: absolute;
@@ -58,7 +41,7 @@ body {
 
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 
-    z-index: 5;
+    z-index: 1000;
 }
 
 .search-icon {
@@ -99,7 +82,7 @@ body {
     box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.3);
     text-decoration: none;
 
-    z-index: 6;
+    z-index: 1001;
 }
 
 .menu-icon-button .bar {

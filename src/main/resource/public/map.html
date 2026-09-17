@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="map.css">
     <link rel="stylesheet" href="colors.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <title>Map</title>
 </head>
 <body>
@@ -12,9 +13,7 @@
 
 <div class="map-page">
 
-    <div class="map">
-        <img src="img/Map.png" alt="Map">
-    </div>
+    <div id="map"></div>
 
     <div class="search-bar">
         <span class="search-icon">&#128269;</span>
@@ -31,13 +30,20 @@
         <span class="bar"></span>
     </a>
 
-
-
 </div>
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
+    // Opret kortet og start i København
+    const map = L.map('map').setView([55.6761, 12.5683], 13);
 
+    // OpenStreetMap som kort
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
 </script>
 

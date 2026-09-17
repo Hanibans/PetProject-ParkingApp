@@ -1,5 +1,7 @@
 package domain;
 
+import io.javalin.http.Context;
+
 import java.util.List;
 
 public class UserService {
@@ -62,6 +64,11 @@ public class UserService {
             System.out.println("no user created!");
         }
 
+        if (!validatePassword(password)){
+            Context ctx;
+            ctx.result("Password must be atleast 8 characters!");
+        }
+
         for (User us : users) {
             if (us.getMail().equals(mail) && us.getPhoneNumber().equals(telefon) && us.getPassword().equals(password)) {
                 return null;
@@ -74,5 +81,13 @@ public class UserService {
 
         return user;
     }
+
+
+    public boolean validatePassword(String password) {
+        return password.length() >= 8 && password.length() <= 15;
+    }
+
+
+
 
 }

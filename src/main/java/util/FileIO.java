@@ -1,4 +1,4 @@
-package util;
+/*package util;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class FileIO {
 
                 String[] parts = scan.nextLine().split(",");
 
-                int phoneNumber = Integer.parseInt(parts[0].trim());
+                String phoneNumber = parts[0].trim();
                 String mail = parts[1].trim();
 
                 users.add(new User(phoneNumber, mail));
@@ -125,4 +125,4 @@ public class FileIO {
 
         return zones;
     }
-}
+}*/

@@ -29,7 +29,7 @@
             Indtast venligst dine oplysninger for at tilmelde dig
         </p>
 
-        <form action="map.html">
+        <form action="/opretkonto" method="post">
 
 
             <div class="input-group">
@@ -93,8 +93,8 @@
             alert("Indtast en gyldig email.");
             return;
         }
-        if (password.length < 6) {
-            alert("Adgangskoden skal være mindst 6 tegn.");
+        if (password.length < 8) {
+            alert("Adgangskoden skal være mindst 8 tegn.");
             return;
         }
 

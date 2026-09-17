@@ -1,27 +1,25 @@
-import domain.Car;
-import domain.Menu;
-import domain.User;
-import domain.Zone;
-import util.FileIO;
-import util.TextUI;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-import javax.swing.*;
+import domain.*;
+import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinThymeleaf;
 
 public class Main {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
+
+        var app = Javalin.create(config -> {
+            UserController.setRoutes(config);
+            config.staticFiles.add("/public");
+            config.fileRenderer(new JavalinThymeleaf());
+
+        }).start(7070);
 
 
 
-        try {
+
+
+
+
+        /*try {
             BufferedImage myPicture = ImageIO.read(new File("src/Map.png"));
 
 
@@ -51,10 +49,9 @@ public class Main {
         Menu menu = new Menu(users, zones, cars, textUI, fileIO);
 
         menu.start();
+    }*/
+
+
     }
-
-
-
-
 
 }

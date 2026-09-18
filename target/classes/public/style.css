@@ -10,7 +10,8 @@ body {
 
 .login-page, .create {
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
 
     background-image: url("../img/parking-background.jpg");
     background-size: cover;
@@ -26,7 +27,7 @@ body {
 /* logo */
 
 .logo {
-    margin-top: 50px;
+    margin-top: 3px;
     text-align: center;
     z-index: 2;
 }
@@ -61,7 +62,7 @@ body {
 
 .login-box {
     width: 315px;
-    min-height: 525px;
+    min-height: 475px;
 
     background: white;
 
@@ -69,8 +70,8 @@ body {
 
     padding: 60px 27px 30px;
 
-    margin-top: 15px;
-    margin-bottom: 400px;
+    margin-top: -50px;
+    margin-bottom: 20px;
 
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     position: relative;
@@ -91,13 +92,13 @@ body {
     font-size: 15px;
     color: #666;
 
-    margin-bottom: 45px;
+    margin-bottom: 25px;
 }
 
 /* inputs */
 
 .input-group {
-    margin-bottom: 35px;
+    margin-bottom: 20px;
 }
 
 label {
@@ -175,6 +176,7 @@ input[type="tel"]{
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    margin-bottom: 20px;
 }
 
 .telefon-nummer label {
@@ -237,7 +239,7 @@ button {
     width: 157px;
     height: 36px;
 
-    margin: 40px auto 0;
+    margin: 20px auto 0;
 
     background: #5b88f5;
     color: white;
@@ -253,14 +255,6 @@ button {
 
 button:hover {
     background: #4778ed;
-}
-
-.telefon-nummer {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 35px;
 }
 
 /* create account */

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konto</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/colors.css">
+</head>
+
+<body>
+
+<h1>Min konto</h1>
+
+<p>E-mail: <span th:text="${user.mail}"></span></p>
+
+<p>Telefonnummer: <span th:text="${user.phoneNumber}"></span></p>
+
+<a href="/map.html">Tilbage</a>
+
+</body>
+</html>

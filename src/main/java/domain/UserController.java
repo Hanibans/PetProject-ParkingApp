@@ -12,6 +12,7 @@ public class UserController {
         config.routes.get("/login", ctx -> ctx.redirect("/login.html"));
         config.routes.post("/opretkonto", ctx -> createUser(ctx));
         config.routes.get("/opretkonto", ctx -> ctx.redirect("/opretKonto.html"));
+        config.routes.get("/konto", ctx -> showAccount(ctx));
         config.routes.get("/logout", ctx -> ctx.redirect("/login"));
         config.routes.get("/support", ctx -> ctx.redirect("/support.html"));
     }
@@ -22,6 +23,7 @@ public class UserController {
 
         User user = userService.login(email, password);
         if (user != null) {
+            ctx.sessionAttribute("user", user);
             ctx.redirect("/map.html");
         } else {
             ctx.status(401);
@@ -57,5 +59,12 @@ public class UserController {
             ctx.status(409);
             ctx.result("Der findes allerede en konto med denne email eller dette telefonnummer.");
         }
+    }
+
+    public static void showAccount(Context ctx) {
+        User user = userService.getUser();
+
+        ctx.attribute("user", user);
+        ctx.render("konto.html");
     }
 }

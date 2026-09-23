@@ -1,7 +1,6 @@
-package domain;
+package entities;
 
 public class PrivateArea extends Parking {
-
 
     public PrivateArea(String label, Zone zone) {
         super(label, zone);
@@ -11,6 +10,4 @@ public class PrivateArea extends Parking {
     public String getSpotTypes() {
         return "Private Area";
     }
-
-
 }

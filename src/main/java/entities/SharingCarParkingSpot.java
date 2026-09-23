@@ -1,4 +1,4 @@
-package domain;
+package entities;
 
 public class SharingCarParkingSpot extends Parking {
 
@@ -10,6 +10,4 @@ public class SharingCarParkingSpot extends Parking {
     public String getSpotTypes() {
         return "Sharing Car";
     }
-
-
 }

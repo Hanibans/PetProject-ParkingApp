@@ -1,4 +1,4 @@
-package domain;
+package entities;
 
 public abstract class Parking {
 
@@ -10,6 +10,10 @@ public abstract class Parking {
         this.label = label;
         this.zone = zone;
         this.available = true;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public Zone getZone() {

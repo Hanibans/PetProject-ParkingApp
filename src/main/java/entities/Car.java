@@ -1,4 +1,4 @@
-package domain;
+package entities;
 
 public class Car {
 
@@ -16,6 +16,4 @@ public class Car {
     public String toString() {
         return licensePlate;
     }
-
-
 }

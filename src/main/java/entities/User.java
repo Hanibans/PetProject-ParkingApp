@@ -8,9 +8,7 @@ public class User {
     private String phoneNumber;
     private String mail;
     private String password;
-    private int licensPlate;
     private List<Car> cars = new ArrayList<>();
-    private ArrayList<Car> license = new ArrayList<>();
 
     public User(String mail, String phoneNumber, String password) {
         this.mail = mail;
@@ -18,20 +16,16 @@ public class User {
         this.password = password;
     }
 
-    public void addCarLicense(Car car) {
-        license.add(car);
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public String getPassword() {
-        return password;
+    public String getMail() {
+        return mail;
     }
 
-    public String getMail(){
-        return mail;
+    public String getPassword() {
+        return password;
     }
 
     public List<Car> getCars() {
@@ -48,9 +42,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "domain.User{" +
-                "mail='" + mail + '\'' +
-                ", phoneNumber=" + phoneNumber + ", password: "+ password;
-
+        return mail + " - " + phoneNumber;
     }
 }

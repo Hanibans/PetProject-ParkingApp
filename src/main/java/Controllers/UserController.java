@@ -2,6 +2,7 @@ package Controllers;
 
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
+import services.UserService;
 
 public class UserController {
     static UserService userService = new UserService();
@@ -11,7 +12,7 @@ public class UserController {
         config.routes.post("/login", ctx -> login(ctx));
         config.routes.get("/login", ctx -> ctx.redirect("/login.html"));
         config.routes.post("/opretkonto", ctx -> createUser(ctx));
-        config.routes.get("/opretkonto", ctx -> ctx.redirect("/opretKonto.html"));
+        config.routes.get("/opretkonto", ctx -> ctx.redirect("/createuser.html"));
         config.routes.get("/konto", ctx -> showAccount(ctx));
         config.routes.get("/logout", ctx -> ctx.redirect("/login"));
         config.routes.get("/support", ctx -> ctx.redirect("/support.html"));
@@ -61,10 +62,4 @@ public class UserController {
         }
     }
 
-    public static void showAccount(Context ctx) {
-        User user = userService.getUser();
-
-        ctx.attribute("user", user);
-        ctx.render("konto.html");
-    }
 }

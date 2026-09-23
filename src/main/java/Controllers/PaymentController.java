@@ -3,7 +3,7 @@ package Controllers;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 import org.jetbrains.annotations.NotNull;
-import service.PaymentService;
+import services.PaymentService;
 
 public class PaymentController {
 

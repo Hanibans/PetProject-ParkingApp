@@ -2,7 +2,7 @@ package Controllers;
 
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
-import service.VehicleService;
+import services.VehicleService;
 
 public class VehicleController {
 

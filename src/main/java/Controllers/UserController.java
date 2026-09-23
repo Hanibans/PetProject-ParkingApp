@@ -1,4 +1,4 @@
-package domain;
+package Controllers;
 
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;

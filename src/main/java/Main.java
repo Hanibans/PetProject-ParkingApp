@@ -1,4 +1,5 @@
-import domain.*;
+import Controllers.UserController;
+import configuration.ThymeleafConfig;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
@@ -9,7 +10,7 @@ public class Main {
         var app = Javalin.create(config -> {
             UserController.setRoutes(config);
             config.staticFiles.add("/public");
-            config.fileRenderer(new JavalinThymeleaf());
+            config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
 
         }).start(7070);
 

@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Køretøjer</title>
 </head>
 <body>
+
+<h1>Mine biler</h1>
+
+<div th:each="car : ${cars}">
+    <p th:text="${car.licensePlate}"></p>
+</div>
 
 </body>
 </html>

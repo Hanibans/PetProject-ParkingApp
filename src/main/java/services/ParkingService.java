@@ -16,9 +16,11 @@ public class ParkingService {
     }
 
     public int getAvailableSpots(Zone zone) {
+
         int availableSpots = 0;
 
         for (Parking parking : zone.getSpots()) {
+
             if (parking.isAvailable()) {
                 availableSpots++;
             }
@@ -30,6 +32,7 @@ public class ParkingService {
     public Parking findAvailableSpot(Zone zone) {
 
         for (Parking parking : zone.getSpots()) {
+
             if (parking.isAvailable()) {
                 return parking;
             }

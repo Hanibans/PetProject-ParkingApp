@@ -62,7 +62,7 @@ public class UserController {
             ctx.sessionAttribute("user", user);
             ctx.redirect("/map.html");
         } else {
-            ctx.status(409);
+            ctx.status(400);
             ctx.result(
                     "Der findes allerede en konto med denne email " +
                             "eller dette telefonnummer.");

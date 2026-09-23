@@ -11,10 +11,83 @@
 </head>
 <body>
 
-<h1>Mine biler</h1>
+<div class="vehicles-page">
 
-<div th:each="car : ${cars}">
-    <p th:text="${car.licensePlate}"></p>
+    <!-- Top -->
+    <div class="vehicles-header">
+
+        <a href="/menu" class="back-button">←</a>
+
+        <h1>Mine køretøjer</h1>
+
+    </div>
+
+
+    <div class="vehicles-content">
+
+        <h2>Dine køretøjer</h2>
+
+
+        <!-- Hvis brugeren ikke har nogen biler -->
+        <div th:if="${#lists.isEmpty(cars)}" class="no-cars">
+            <p>Du har ikke tilføjet noget køretøj endnu.</p>
+        </div>
+
+
+        <!-- Viser brugerens biler -->
+        <div th:each="car : ${cars}" class="vehicle-card">
+
+            <div class="vehicle-info">
+                <img src="/img/car-icon.png" alt="Bil">
+
+                <span th:text="${car.licensePlate}"></span>
+            </div>
+
+            <!-- Slet bil -->
+            <form action="/vehicles/remove" method="post">
+
+                <input
+                        type="hidden"
+                        name="licensePlate"
+                        th:value="${car.licensePlate}">
+
+                <button type="submit" class="delete-button">
+                    Slet
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- Tilføj køretøj -->
+        <div class="add-vehicle">
+
+            <h2>Tilføj køretøj</h2>
+
+            <form action="/vehicles/add" method="post">
+
+                <label for="licensePlate">
+                    Nummerplade
+                </label>
+
+                <input
+                        type="text"
+                        id="licensePlate"
+                        name="licensePlate"
+                        placeholder="F.eks. AB12345"
+                        required>
+
+                <button type="submit" class="add-button">
+                    Tilføj køretøj
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
 </div>
 
 </body>

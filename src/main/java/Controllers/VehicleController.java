@@ -1,12 +1,13 @@
 package Controllers;
 
+import entities.User;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 import services.VehicleService;
 
 public class VehicleController {
 
-    private final VehicleService vehicleService;
+    private static VehicleService vehicleService = new VehicleService();
 
     public static void setRoutes(JavalinConfig config) {
         config.routes.get("/vehicles", ctx -> showVehicles(ctx));
@@ -19,20 +20,42 @@ public class VehicleController {
     }
 
     public static void showVehicles(Context ctx) {
-        // Hent den nuværende bruger
-        // Hent brugerens biler
-        // Send dem til vehicles.html
+        User user = ctx.sessionAttribute("user");
+        if (user == null) {
+            ctx.redirect("/login");
+            return;
+        }
+        ctx.render("vehicles.html",
+                java.util.Map.of("cars", user.getCars()));
     }
 
     public static void addVehicle(Context ctx) {
-        String licensePlate = ctx.formParam("licensePlate");
+        User user = ctx.sessionAttribute("user");
+        if (user == null) {
+            ctx.redirect("/login");
+            return;
+        }
 
-        // vehicleService.addVehicle(...)
+        String licensePlate = ctx.formParam("licensePlate");
+        if (licensePlate == null || licensePlate.isBlank()) {
+            ctx.status(400);
+            ctx.result("Indtast en nummerplade.");
+            return;
+        }
+
+        vehicleService.addVehicle(user, licensePlate);
+        ctx.redirect("/vehicles");
     }
 
     public static void removeVehicle(Context ctx) {
-        String licensePlate = ctx.formParam("licensePlate");
+        User user = ctx.sessionAttribute("user");
+        if (user == null) {
+            ctx.redirect("/login");
+            return;
+        }
 
-        // vehicleService.removeVehicle(...)
+        String licensePlate = ctx.formParam("licensePlate");
+        vehicleService.removeVehicle(user, licensePlate);
+        ctx.redirect("/vehicles");
     }
 }

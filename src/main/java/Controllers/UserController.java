@@ -18,6 +18,7 @@ public class UserController {
         config.routes.get("/logout", ctx -> logout(ctx));
         config.routes.get("/account", ctx -> showAccount(ctx));
         config.routes.get("/support", ctx -> ctx.redirect("/support.html"));
+        config.routes.get("/menu", ctx -> ctx.redirect("/menu.html"));
     }
 
     public static void login(Context ctx) {

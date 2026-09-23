@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* Hele siden */
+.account-page {
+    min-height: 100vh;
+}
+
+/* Farvet top */
+.account-header {
+    position: relative;
+    height: 120px;
+
+    background: #ff575d;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+/* Overskrift */
+.account-header h1 {
+    margin: 0;
+    color: white;
+    font-size: 32px;
+}
+
+/* Tilbage-knap */
+.back-button {
+    position: absolute;
+    left: 25px;
+
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    text-decoration: none;
+
+    font-size: 32px;
+    font-weight: bold;
+
+    border-radius: 50%;
+
+    transition: background-color 0.2s;
+}
+
+.back-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+/* Indhold */
+.account-content {
+    width: 90%;
+    max-width: 600px;
+
+    margin: 40px auto;
+}
+
+/* Overskrift */
+.account-content h2 {
+    margin-bottom: 25px;
+}
+
+
+/* Et felt */
+.account-field {
+    background-color: white;
+
+    padding: 20px;
+    margin-bottom: 18px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Label */
+.account-field label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-size: 14px;
+    color: #777;
+}
+
+
+/* Værdi + knap */
+.field-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+
+/* Selve værdien */
+.field-row span {
+    font-size: 17px;
+    color: #222;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* Ændr-knap */
+.field-row button {
+    border: none;
+
+    padding: 9px 18px;
+
+    border-radius: 10px;
+
+    background-color: var(#ff575d);
+    color: white;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.field-row button:hover {
+    opacity: 0.85;
+}

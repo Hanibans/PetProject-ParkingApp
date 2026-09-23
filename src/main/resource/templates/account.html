@@ -3,19 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konto</title>
 
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/colors.css">
+    <title>Min konto</title>
+
+    <link rel="stylesheet" href="/account.css">
+    <link rel="stylesheet" href="/colors.css">
 </head>
 
 <body>
 
-<h1>Min konto</h1>
+<div class="account-page">
 
-<p>E-mail: <span th:text="${user.mail}"></span></p>
-<p>Telefonnummer: <span th:text="${user.phoneNumber}"></span></p>
+    <!-- Toppen -->
+    <div class="account-header">
 
+        <a href="/menu" class="back-button">←</a>
+
+        <h1>Min konto</h1>
+
+    </div>
+
+
+    <!-- Kontooplysninger -->
+    <div class="account-content">
+
+        <h2>Kontooplysninger</h2>
+
+        <!-- Email -->
+        <div class="account-field">
+            <label>Email</label>
+
+            <div class="field-row">
+                <span th:text="${user.mail}"></span>
+
+                <button type="button" onclick="editField('email')">
+                    Ændr
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Telefonnummer -->
+        <div class="account-field">
+            <label>Telefonnummer</label>
+
+            <div class="field-row">
+                <span th:text="${user.phoneNumber}"></span>
+
+                <button type="button" onclick="editField('phone')">
+                    Ændr
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Password -->
+        <div class="account-field">
+            <label>Adgangskode</label>
+
+            <div class="field-row">
+                <span>••••••••</span>
+
+                <button type="button" onclick="editField('password')">
+                    Ændr
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function editField(field) {
+        alert("Ændring af " + field + " kommer snart.");
+    }
+</script>
 
 </body>
 </html>

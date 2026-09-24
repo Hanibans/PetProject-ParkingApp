@@ -42,6 +42,10 @@ public class VehicleController {
             ctx.result("Indtast en nummerplade.");
             return;
         }
+        if (licensePlate.length() != 8){
+            ctx.status(400);
+            ctx.result("Nummerplade skal have 7 tegn!");
+        }
 
         vehicleService.addVehicle(user, licensePlate);
         ctx.redirect("/vehicles");

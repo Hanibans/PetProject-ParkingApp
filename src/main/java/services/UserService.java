@@ -1,6 +1,7 @@
 package services;
 
 import entities.User;
+import exceptions.IllegalUserDataException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class UserService {
 
     public User login(String mail, String password) {
         if (mail == null || password == null) {
-            return null;
+          return null;
         }
 
         for (User user : users) {
@@ -36,21 +37,17 @@ public class UserService {
         return null;
     }
 
-    public User createUser(String mail, String telefon, String password) {
+    public User createUser(String mail, String telefon, String password) throws IllegalUserDataException {
 
-        if (mail == null || telefon == null || password == null) {
-            return null;
-        }
-
-        if (!validatePassword(password)) {
-            return null;
-        }
+        validateEmail(mail);
+        validatePhoneNumber(telefon);
+        validatePassword(password);
 
         // Tjek om email eller telefonnummer allerede findes
         for (User user : users) {
-            if (user.getMail().equals(mail)
-                    || user.getPhoneNumber().equals(telefon)) {
-                return null;
+            if (user.getMail().equals(mail) || user.getPhoneNumber().equals(telefon)) {
+                throw new IllegalUserDataException(
+                        "Der findes allerede en konto med denne email eller dette telefonnummer.");
             }
         }
 
@@ -60,9 +57,23 @@ public class UserService {
         return user;
     }
 
-    public boolean validatePassword(String password) {
-        return password != null
-                && password.length() >= 8
-                && password.length() <= 15;
+
+    private void validateEmail(String email) throws IllegalUserDataException {
+        if (email == null || !email.matches("^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$")) {
+            throw new IllegalUserDataException("Indtast en gyldig email.");
+        }
     }
+
+    private void validatePhoneNumber(String phoneNumber) throws IllegalUserDataException {
+        if (phoneNumber == null || !phoneNumber.matches("\\d{8}")) {
+            throw new IllegalUserDataException("Telefonnummer skal bestå af præcis 8 cifre.");
+        }
+    }
+
+    private void validatePassword(String password) throws IllegalUserDataException {
+        if (password == null || password.length() < 8 || password.length() > 15) {
+            throw new IllegalUserDataException("Adgangskoden skal have mellem 8 og 15 tegn.");
+        }
+    }
+
 }

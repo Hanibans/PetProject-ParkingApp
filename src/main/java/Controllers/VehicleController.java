@@ -15,9 +15,6 @@ public class VehicleController {
         config.routes.post("/vehicles/remove", ctx -> removeVehicle(ctx));
     }
 
-    public VehicleController(VehicleService vehicleService) {
-        this.vehicleService = vehicleService;
-    }
 
     public static void showVehicles(Context ctx) {
         User user = ctx.sessionAttribute("user");
@@ -42,7 +39,7 @@ public class VehicleController {
             ctx.result("Indtast en nummerplade.");
             return;
         }
-        if (licensePlate.length() != 8){
+        if (licensePlate.length() != 7){
             ctx.status(400);
             ctx.result("Nummerplade skal have 7 tegn!");
         }

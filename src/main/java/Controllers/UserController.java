@@ -1,6 +1,7 @@
 package Controllers;
 
 import entities.User;
+import exceptions.IllegalUserDataException;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 import services.UserService;
@@ -24,8 +25,8 @@ public class UserController {
     public static void login(Context ctx) {
         String email = ctx.formParam("email");
         String password = ctx.formParam("password");
-        User user = userService.login(email, password);
 
+        User user = userService.login(email, password);
         if (user != null) {
             ctx.sessionAttribute("user", user);
             ctx.redirect("/map.html");
@@ -40,34 +41,16 @@ public class UserController {
         String phonenumber = ctx.formParam("phonenumber");
         String password = ctx.formParam("password");
 
-        if (email == null || !email.contains("@")) {
-            ctx.status(400);
-            ctx.result("Indtast en gyldig email.");
-            return;
-        }
-
-        if (password == null || !userService.validatePassword(password)) {
-            ctx.status(400);
-            ctx.result("Adgangskoden skal have mellem 8 og 15 tegn.");
-            return;
-        }
-
-        if (phonenumber == null || phonenumber.length() != 8) {
-            ctx.status(400);
-            ctx.result("Telefonnummer skal indeholde 8 cifre.");
-            return;
-        }
-
-        User user = userService.createUser(email, phonenumber, password);
-        if (user != null) {
+        try {
+            User user = userService.createUser(email, phonenumber, password);
             ctx.sessionAttribute("user", user);
             ctx.redirect("/map.html");
-        } else {
+
+        } catch (IllegalUserDataException e) {
             ctx.status(400);
-            ctx.result(
-                    "Der findes allerede en konto med denne email " +
-                            "eller dette telefonnummer.");
+            ctx.result(e.getMessage());
         }
+
     }
 
     public static void logout(Context ctx) {
@@ -84,4 +67,5 @@ public class UserController {
         }
         ctx.render("account.html", java.util.Map.of("user", user));
     }
+
 }

@@ -59,13 +59,13 @@ public class UserService {
 
 
     private void validateEmail(String email) throws IllegalUserDataException {
-        if (email == null || !email.matches("^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$")) {
+        if (email == null || !email.contains("@")) {
             throw new IllegalUserDataException("Indtast en gyldig email.");
         }
     }
 
     private void validatePhoneNumber(String phoneNumber) throws IllegalUserDataException {
-        if (phoneNumber == null || !phoneNumber.matches("\\d{8}")) {
+        if (phoneNumber == null || phoneNumber.length() != 8 || phoneNumber.matches("\\d{8}")) {
             throw new IllegalUserDataException("Telefonnummer skal bestå af præcis 8 cifre.");
         }
     }

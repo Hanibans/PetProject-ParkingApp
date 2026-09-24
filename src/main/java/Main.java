@@ -1,7 +1,7 @@
-import Controllers.ParkingController;
-import Controllers.PaymentController;
-import Controllers.UserController;
-import Controllers.VehicleController;
+import controllers.ParkingController;
+import controllers.PaymentController;
+import controllers.UserController;
+import controllers.VehicleController;
 import configuration.ThymeleafConfig;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;

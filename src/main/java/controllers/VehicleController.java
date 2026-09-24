@@ -1,4 +1,4 @@
-package Controllers;
+package controllers;
 
 import entities.User;
 import io.javalin.config.JavalinConfig;

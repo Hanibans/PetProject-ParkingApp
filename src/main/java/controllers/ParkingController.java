@@ -1,4 +1,4 @@
-package Controllers;
+package controllers;
 
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;

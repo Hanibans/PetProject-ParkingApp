@@ -65,7 +65,7 @@ public class UserService {
     }
 
     private void validatePhoneNumber(String phoneNumber) throws IllegalUserDataException {
-        if (phoneNumber == null || phoneNumber.length() != 8 || phoneNumber.matches("\\d{8}")) {
+        if (phoneNumber == null || phoneNumber.length() != 8 || !phoneNumber.matches("\\d{8}")) {
             throw new IllegalUserDataException("Telefonnummer skal bestå af præcis 8 cifre.");
         }
     }

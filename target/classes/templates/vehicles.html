@@ -41,6 +41,8 @@
                 <img src="/img/car-icon.png" alt="Bil">
 
                 <span th:text="${car.licensePlate}"></span>
+
+                <span class="car-type" th:text="${car.type}"></span>
             </div>
 
             <!-- Slet bil -->
@@ -77,6 +79,37 @@
                         name="licensePlate"
                         placeholder="F.eks. AB12345"
                         required>
+
+                <label for="carType">
+                    Biltype
+                </label>
+
+                <select
+                        id="carType"
+                        name="carType"
+                        required>
+
+                    <option value="">
+                        Vælg biltype
+                    </option>
+
+                    <option value="Almindelig">
+                        Almindelig bil
+                    </option>
+
+                    <option value="Elbil">
+                        Elbil
+                    </option>
+
+                    <option value="Handicap">
+                        Handicapbil
+                    </option>
+
+                    <option value="Delebil">
+                        Delebil
+                    </option>
+
+                </select>
 
                 <button type="submit" class="add-button">
                     Tilføj køretøj

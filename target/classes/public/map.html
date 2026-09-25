@@ -15,13 +15,21 @@
 
     <div id="map"></div>
 
+    <div id="zone-info">
+        <p>Vælg en parkeringszone på kortet.</p>
+    </div>
+
     <div class="search-bar">
         <span class="search-icon">&#128269;</span>
         <input
                 type="text"
                 id="searchInput"
                 placeholder="Søg på lokation..."
+                autocomplete="off"
         >
+
+        <div id="searchSuggestions"></div>
+
     </div>
 
     <a href="menu.html" class="menu-icon-button">
@@ -38,12 +46,298 @@
 <script>
 
     // Opret kortet og start i København
-    const map = L.map('map').setView([55.6761, 12.5683], 13);
+    const map = L.map('map').setView(
+        [55.6861, 12.5683],
+        13
+    );
 
     // OpenStreetMap som kort
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            attribution:
+                '&copy; OpenStreetMap contributors'
+        }
+    ).addTo(map);
+
+    const searchInput =
+        document.getElementById("searchInput");
+    console.log("Søgefelt fundet:", searchInput);
+
+    const searchSuggestions =
+        document.getElementById("searchSuggestions");
+
+    let searchMarker = null;
+
+    let searchTimeout = null;
+
+
+    searchInput.addEventListener(
+        "input",
+        function() {
+
+            const searchText =
+                searchInput.value.trim();
+
+            // Fjern forslag hvis feltet er tomt
+            if (searchText.length < 2) {
+                searchSuggestions.innerHTML = "";
+                searchSuggestions.style.display = "none";
+                return;
+            }
+
+            // Vent lidt før vi søger
+            // Så vi ikke sender en request for hvert bogstav
+            clearTimeout(searchTimeout);
+
+            searchTimeout = setTimeout(
+                function() {
+                    searchLocations(searchText);
+                },
+                300
+            );
+        }
+    );
+
+    function searchLocations(searchText) {
+        const url =
+            "https://nominatim.openstreetmap.org/search" +
+            "?format=json" +
+            "&q=" +
+            encodeURIComponent(searchText) +
+            "&limit=5" +
+            "&countrycodes=dk" +
+            "&addressdetails=1";
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                searchSuggestions.innerHTML = "";
+
+                if (data.length === 0) {
+                    searchSuggestions.style.display =
+                        "none";
+                    return;
+                }
+
+                // Lav forslag
+                data.forEach(function(place) {
+                    const suggestion =
+                        document.createElement("div");
+
+                    suggestion.classList.add(
+                        "search-suggestion"
+                    );
+
+                    const address = place.address;
+
+                    let locationName =
+                        place.name || place.display_name.split(",")[0];
+
+                    let locationAddress = "";
+
+                    if (address) {
+                        if (address.road) {
+                            locationAddress += address.road;
+                        } if (address.house_number) {
+                            locationAddress += " " + address.house_number;
+                        } if (address.city) {
+                            locationAddress += ", " + address.city;
+                        }
+                    }
+
+                    suggestion.innerHTML = `
+                        <div class="suggestion-name">
+                        📍 ${locationName}
+                        </div>
+
+                        <div class="suggestion-address">
+                        ${locationAddress}
+                        </div>
+                    `;
+
+                    // Når man klikker på et forslag
+                    suggestion.addEventListener(
+                        "click",
+                        function() {
+                            selectLocation(place);
+                        }
+                    );
+
+                    searchSuggestions.appendChild(
+                        suggestion
+                    );
+                });
+
+                searchSuggestions.style.display =
+                    "block";
+            })
+
+            .catch(error => {
+                console.error(
+                    "Fejl ved søgning:",
+                    error
+                );
+            });
+    }
+
+    function selectLocation(place) {
+        const latitude =
+            parseFloat(place.lat);
+        const longitude =
+            parseFloat(place.lon);
+
+        // Flyt kortet
+        map.setView(
+            [
+                latitude,
+                longitude
+            ],
+            16
+        );
+
+        // Fjern gammel markør
+        if (searchMarker !== null) {
+            map.removeLayer(
+                searchMarker
+            );
+        }
+
+        // Lav ny markør
+        searchMarker =
+            L.marker([
+                latitude,
+                longitude
+            ])
+                .addTo(map)
+                .bindPopup(
+                    place.display_name
+                )
+                .openPopup();
+
+        // Skriv det valgte sted i søgefeltet
+        const address = place.address;
+
+        let searchResult = place.name || "";
+
+        if (address) {
+            if (address.postcode) {
+                searchResult += ", " + address.postcode;
+            } if (address.city) {
+                searchResult += " " + address.city;
+            } if (address.municipality) {
+                searchResult += ", " + address.municipality;
+            }
+        }
+
+        searchInput.value = searchResult;
+
+        // Fjern forslag
+        searchSuggestions.innerHTML = "";
+        searchSuggestions.style.display =
+            "none";
+    }
+
+    // Hent parkeringszoner fra Java-backend
+    fetch("/parking-zones")
+        .then(response => response.json())
+        .then(data => {
+
+            console.log(
+                "Parkeringszoner:",
+                data
+            );
+
+            L.geoJSON(data, {
+                // Farver på parkeringszonerne
+                style: function(feature) {
+                    let zoneName =
+                        feature.properties.zone_navn;
+                    let zoneColor = "gray";
+                    if (zoneName === "Rød") {
+                        zoneColor = "#d98b8b";
+                    } else if (zoneName === "Grøn") {
+                        zoneColor = "#9fbe9f";
+                    } else if (zoneName === "Blå") {
+                        zoneColor = "#8faec4";
+                    } else if (zoneName === "Gul") {
+                        zoneColor = "#d8c98a";
+                    }
+
+                    return {
+                        color: "black",
+                        weight: 1,
+                        fillColor: zoneColor,
+                        fillOpacity: 0.4
+                    };
+                },
+
+                // Hvad der sker når man klikker på en zone
+                onEachFeature: function(feature, layer) {
+
+                    // Popup på kortet
+                    layer.bindPopup(
+                        "<b>Zone:</b> " +
+                        feature.properties.zone_navn +
+                        "<br><b>Pris:</b> " +
+                        feature.properties.ptakst_dag +
+                        " kr./time"
+                    );
+
+                    // Når brugeren klikker på zonen
+                    layer.on("click", function() {
+                        console.log(
+                            "DU HAR KLIKKET PÅ ZONEN"
+                        );
+
+                        console.log(
+                            feature.properties
+                        );
+
+                        const zoneName =
+                            feature.properties.zone_navn;
+                        const price =
+                            feature.properties.ptakst_dag;
+                        const description =
+                            feature.properties.beskrivelse;
+
+                        // Find centrum af zonen
+                        const center =
+                            layer.getBounds().getCenter();
+
+                        const lat = center.lat;
+                        const lon = center.lng;
+
+                        console.log(
+                            "Valgt zone:",
+                            zoneName
+                        );
+
+                        console.log(
+                            "Zone centrum:",
+                            lat,
+                            lon
+                        );
+
+                        // Vis information om zonen
+                        document.getElementById(
+                            "zone-info"
+                        ).innerHTML = `
+                            <h2>${zoneName} zone</h2>
+                            <p>${description}</p>
+                            <p>${price} kr./time</p>
+                        `;
+                    });
+                }
+            }).addTo(map);
+        })
+
+        .catch(error => {
+            console.error(
+                "Kunne ikke hente parkeringszoner:",
+                error
+            );
+        });
 
 </script>
 

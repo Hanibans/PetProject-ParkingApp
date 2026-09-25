@@ -1,6 +1,7 @@
 package controllers;
 
 import entities.User;
+import entities.Car;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 import services.VehicleService;
@@ -34,17 +35,40 @@ public class VehicleController {
         }
 
         String licensePlate = ctx.formParam("licensePlate");
+        String carType = ctx.formParam("carType");
+
+        if (carType == null || carType.isBlank()) {
+            ctx.status(400);
+            ctx.result("Vælg en biltype.");
+            return;
+        }
+
         if (licensePlate == null || licensePlate.isBlank()) {
             ctx.status(400);
             ctx.result("Indtast en nummerplade.");
             return;
         }
-        if (licensePlate.length() != 7){
+
+        // Fjern mellemrum og gør bogstaver store
+        licensePlate = licensePlate
+                .replaceAll("\\s+", "")
+                .toUpperCase();
+
+        // Skal være præcis 2 bogstaver + 5 tal
+        if (!licensePlate.matches("[A-Z]{2}\\d{5}")) {
             ctx.status(400);
-            ctx.result("Nummerplade skal have 7 tegn!");
+            ctx.result("Nummerpladen skal have 2 bogstaver og 5 tal. Fx AB12345.");
+            return;
         }
 
-        vehicleService.addVehicle(user, licensePlate);
+        // Tjek om nummerpladen allerede findes
+        if (vehicleService.licensePlateExists(user, licensePlate)) {
+            ctx.status(400);
+            ctx.result("Denne nummerplade er allerede registreret.");
+            return;
+        }
+
+        vehicleService.addVehicle(user, licensePlate, carType);
         ctx.redirect("/vehicles");
     }
 

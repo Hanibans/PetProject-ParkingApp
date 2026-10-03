@@ -62,7 +62,7 @@ public class UserService {
         if (email == null || !email.contains("@")){
             throw new IllegalUserDataException("Indtast en gyldig email.");
         }
-        else if (!email.contains(".gmail.com") ||!email.contains(".hotmail.com") || !email.contains(".yahoo.com")){
+        else if (!email.contains("gmail.com") ||!email.contains("hotmail.com") || !email.contains("yahoo.com")){
             throw new IllegalUserDataException("Indtast en gyldig email.");
         }
     }

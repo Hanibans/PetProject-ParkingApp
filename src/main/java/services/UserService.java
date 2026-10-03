@@ -59,7 +59,10 @@ public class UserService {
 
 
     private void validateEmail(String email) throws IllegalUserDataException {
-        if (email == null || !email.contains("@")) {
+        if (email == null || !email.contains("@")){
+            throw new IllegalUserDataException("Indtast en gyldig email.");
+        }
+        else if (!email.contains(".gmail.com") ||!email.contains(".hotmail.com") || !email.contains(".yahoo.com")){
             throw new IllegalUserDataException("Indtast en gyldig email.");
         }
     }

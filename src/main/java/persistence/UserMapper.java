@@ -1,7 +1,5 @@
 package persistence;
 
-import dto.UserAndAuthorsDTO;
-import entities.Author;
 import entities.User;
 import exceptions.DatabaseException;
 import org.slf4j.Logger;
@@ -23,7 +21,7 @@ public class UserMapper {
 
     public User login (String userName, String password) throws DatabaseException{
 
-        User user = getUserByUserName(userName);
+        User user = (userName);
         if(user != null && user.getPassword().equals(password)){
             return user;
         }

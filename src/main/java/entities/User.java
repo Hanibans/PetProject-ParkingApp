@@ -8,8 +8,15 @@ public class User {
     private String phoneNumber;
     private String mail;
     private String password;
+    private int id;
     private List<Car> cars = new ArrayList<>();
 
+    public User(String mail, String phoneNumber, String password, int id) {
+        this.mail = mail;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.id = id;
+    }
     public User(String mail, String phoneNumber, String password) {
         this.mail = mail;
         this.phoneNumber = phoneNumber;
@@ -26,6 +33,14 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public List<Car> getCars() {

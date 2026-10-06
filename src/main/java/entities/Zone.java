@@ -1,7 +1,5 @@
 package entities;
 
-import factories.ParkingFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 

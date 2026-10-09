@@ -22,25 +22,26 @@ public class Main {
 
     public static void main(String[] args) {
 
-            // Mappere (får poolen)
-            UserMapper userMapper = new UserMapper(connectionPool);
-            VehicleMapper vehicleMapper = new VehicleMapper(connectionPool);
-            ParkingMapper parkingMapper = new ParkingMapper(connectionPool);
-            PaymentMapper paymentMapper = new PaymentMapper(connectionPool);
-
-            // Services (får mapperne)
-            UserService userService = new UserService(userMapper, vehicleMapper);
-            VehicleService vehicleService = new VehicleService(vehicleMapper);
-            ParkingService parkingService = new ParkingService(parkingMapper);
-            PaymentService paymentService = new PaymentService(paymentMapper);
-
-            // Controllere (får services)
-            UserController userController = new UserController(userService);
-            VehicleController vehicleController = new VehicleController(vehicleService);
-            ParkingController parkingController = new ParkingController(parkingService);
-            PaymentController paymentController = new PaymentController(paymentService);
 
             Javalin.create(config -> {
+                // Mappere (får poolen)
+                UserMapper userMapper = new UserMapper(connectionPool);
+                VehicleMapper vehicleMapper = new VehicleMapper(connectionPool);
+                ParkingMapper parkingMapper = new ParkingMapper(connectionPool);
+                PaymentMapper paymentMapper = new PaymentMapper(connectionPool);
+
+                // Services (får mapperne)
+                UserService userService = new UserService(userMapper, vehicleMapper);
+                VehicleService vehicleService = new VehicleService(vehicleMapper);
+                ParkingService parkingService = new ParkingService(parkingMapper);
+                PaymentService paymentService = new PaymentService(paymentMapper);
+
+                // Controllere (får services)
+                UserController userController = new UserController(userService);
+                VehicleController vehicleController = new VehicleController(vehicleService);
+                ParkingController parkingController = new ParkingController(parkingService);
+                PaymentController paymentController = new PaymentController(paymentService);
+
                 config.staticFiles.add("/public");
                 config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
 

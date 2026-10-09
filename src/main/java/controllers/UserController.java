@@ -6,17 +6,16 @@ import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 import persistence.ConnectionPool;
 import persistence.UserMapper;
+import persistence.VehicleMapper;
 import services.UserService;
 
 public class UserController {
 
     private ConnectionPool connectionPool;
-    private UserService userService;
-    UserMapper userMapper;
+    private static UserService userService;
 
-    public UserController(ConnectionPool connectionPool){
-        this.connectionPool = connectionPool;
-        this.userService = new UserService(userMapper);
+    public UserController(UserService userService){
+        this.userService = userService;
     }
 
     public static void setRoutes(JavalinConfig config) {

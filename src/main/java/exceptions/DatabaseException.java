@@ -1,8 +1,16 @@
 package exceptions;
 
-public class DatabaseException extends Exception{
+import java.sql.SQLException;
 
-    public DatabaseException(String msg){
-        super(msg);
+public class DatabaseException extends Exception
+{
+    public DatabaseException(String errorMessage)
+    {
+        super(errorMessage);
+    }
+
+    public DatabaseException(String errorMessage, SQLException exception)
+    {
+        super(errorMessage, exception);
     }
 }

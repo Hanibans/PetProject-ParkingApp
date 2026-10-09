@@ -3,6 +3,7 @@ package controllers;
 import entities.User;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
+import services.ParkingService;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,6 +11,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ParkingController {
+    private ParkingService parkingService;
+
+    public ParkingController(ParkingService parkingService) {
+        this.parkingService = parkingService;
+    }
 
     public static void setRoutes(JavalinConfig config) {
         config.routes.get("/parking", ctx -> showParking(ctx));

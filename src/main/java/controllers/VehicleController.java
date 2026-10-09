@@ -17,6 +17,7 @@ public class VehicleController {
 
     public static void setRoutes(JavalinConfig config) {
         config.routes.get("/vehicles", ctx -> showVehicles(ctx));
+        config.routes.get("/vehicles/add", ctx -> addVehicle(ctx));
         config.routes.post("/vehicles/add", ctx -> addVehicle(ctx));
         config.routes.post("/vehicles/remove", ctx -> removeVehicle(ctx));
     }
@@ -72,6 +73,7 @@ public class VehicleController {
             ctx.result("Denne nummerplade er allerede registreret.");
             return;
         }
+        System.out.println("User ID: " + user.getId());
 
         vehicleService.addVehicle(user, licensePlate, carType);
         ctx.redirect("/vehicles");

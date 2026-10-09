@@ -19,7 +19,6 @@ public class VehicleController {
         config.routes.get("/vehicles", ctx -> showVehicles(ctx));
         config.routes.post("/vehicles/add", ctx -> addVehicle(ctx));
         config.routes.post("/vehicles/remove", ctx -> removeVehicle(ctx));
-        config.routes.get("/my-vehicles", ctx -> getMyVehicles(ctx));
     }
 
 
@@ -90,42 +89,4 @@ public class VehicleController {
         ctx.redirect("/vehicles");
     }
 
-    public static void getMyVehicles(Context ctx) {
-
-        User user =
-                ctx.sessionAttribute("user");
-
-        if (user == null) {
-            ctx.status(401);
-            ctx.result("Ikke logget ind");
-            return;
-        }
-
-        StringBuilder json =
-                new StringBuilder("[");
-
-        for (int i = 0; i < user.getCars().size(); i++) {
-
-            var car =
-                    user.getCars().get(i);
-
-            json.append("{")
-                    .append("\"licensePlate\":\"")
-                    .append(car.getLicensePlate())
-                    .append("\",")
-                    .append("\"type\":\"")
-                    .append(car.getType())
-                    .append("\"")
-                    .append("}");
-
-            if (i < user.getCars().size() - 1) {
-                json.append(",");
-            }
-        }
-
-        json.append("]");
-
-        ctx.contentType("application/json");
-        ctx.result(json.toString());
-    }
 }

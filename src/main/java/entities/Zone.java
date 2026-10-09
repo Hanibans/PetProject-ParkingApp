@@ -6,45 +6,40 @@ import java.util.List;
 public class Zone {
 
     private String name;
+    private int zoneId;
+    private String color;
     private double pricePerHour;
+    private int totalSpots;
     private List<Parking> spots;
 
-    public Zone(String name, double pricePerHour,
-                int totalSpots,
-                int disabled,
-                int el,
-                int regular,
-                int sharing,
-                int privateArea) {
 
+    public Zone(int zoneId, String name, String color, double pricePerHour, int totalCapacity) {
+        this.zoneId = zoneId;
         this.name = name;
+        this.color = color;
         this.pricePerHour = pricePerHour;
-        this.spots = new ArrayList<>();
+        this.totalSpots = totalCapacity;
+    }
 
-        for (int i = 0; i < disabled; i++) {
-            spots.add(ParkingFactory.createParking(
-                    "disabled", "D" + i, this));
-        }
 
-        for (int i = 0; i < el; i++) {
-            spots.add(ParkingFactory.createParking(
-                    "el", "E" + i, this));
-        }
+    public int getTotalSpots() {
+        return totalSpots;
+    }
 
-        for (int i = 0; i < regular; i++) {
-            spots.add(ParkingFactory.createParking(
-                    "regular", "R" + i, this));
-        }
+    public void setTotalSpots(int totalSpots) {
+        this.totalSpots = totalSpots;
+    }
 
-        for (int i = 0; i < sharing; i++) {
-            spots.add(ParkingFactory.createParking(
-                    "sharing", "S" + i, this));
-        }
+    public void setPricePerHour(double pricePerHour) {
+        this.pricePerHour = pricePerHour;
+    }
 
-        for (int i = 0; i < privateArea; i++) {
-            spots.add(ParkingFactory.createParking(
-                    "private", "P" + i, this));
-        }
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public String getName() {

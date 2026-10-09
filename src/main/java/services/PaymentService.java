@@ -13,13 +13,9 @@ public class PaymentService {
         this.paymentMapper = paymentMapper;
     }
 
-    public Payment startPayment(
-            User user,
-            Car car,
-            Parking parking) {
+    public Payment startPayment(User user, Car car, Parking parking) {
 
-        Payment payment =
-                new Payment(user, car, parking);
+        Payment payment = new Payment(user, car, parking);
 
         payment.startPayment();
 

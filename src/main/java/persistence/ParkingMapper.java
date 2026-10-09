@@ -32,7 +32,7 @@ public class ParkingMapper {
                         rs.getInt("zone_id"),
                         rs.getString("name"),
                         rs.getString("color"),
-                        rs.getBigDecimal("price_per_hour"),
+                        rs.getDouble("price_per_hour"),
                         rs.getInt("total_capacity")));
             }
         } catch (SQLException e) {

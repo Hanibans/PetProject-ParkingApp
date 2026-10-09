@@ -5,7 +5,11 @@ import controllers.VehicleController;
 import configuration.ThymeleafConfig;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
-import persistence.ConnectionPool;
+import persistence.*;
+import services.ParkingService;
+import services.PaymentService;
+import services.UserService;
+import services.VehicleService;
 
 public class Main {
 
@@ -18,19 +22,36 @@ public class Main {
 
     public static void main(String[] args) {
 
-        var app = Javalin.create(config -> {
-            config.staticFiles.add("/public");
-            config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-            UserController userController = new UserController(connectionPool);
-            ParkingController parkingController = new ParkingController(connectionPool);
-            UserController.setRoutes(config);
-            VehicleController.setRoutes(config);
-            ParkingController.setRoutes(config);
-            PaymentController.setRoutes(config);
+        public static void main(String[] args) {
 
+            // Mappere (får poolen)
+            UserMapper userMapper = new UserMapper(connectionPool);
+            VehicleMapper vehicleMapper = new VehicleMapper(connectionPool);
+            ParkingMapper parkingMapper = new ParkingMapper(connectionPool);
+            PaymentMapper paymentMapper = new PaymentMapper(connectionPool);
 
+            // Services (får mapperne)
+            UserService userService = new UserService(userMapper, vehicleMapper);
+            VehicleService vehicleService = new VehicleService(vehicleMapper);
+            ParkingService parkingService = new ParkingService(parkingMapper);
+            PaymentService paymentService = new PaymentService(paymentMapper);
 
-        }).start(7070);
+            // Controllere (får services)
+            UserController userController = new UserController(userService);
+            VehicleController vehicleController = new VehicleController(vehicleService);
+            ParkingController parkingController = new ParkingController(parkingService);
+            PaymentController paymentController = new PaymentController(paymentService);
+
+            Javalin.create(config -> {
+                config.staticFiles.add("/public");
+                config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
+
+                userController.setRoutes(config);
+                vehicleController.setRoutes(config);
+                parkingController.setRoutes(config);
+                paymentController.setRoutes(config);
+            }).start(7070);
+        }
 
     }
 }

@@ -1,5 +1,6 @@
 package services;
 
+import entities.Car;
 import entities.User;
 import exceptions.DatabaseException;
 import exceptions.IllegalUserDataException;

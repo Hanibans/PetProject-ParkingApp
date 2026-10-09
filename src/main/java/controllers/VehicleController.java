@@ -9,7 +9,11 @@ import exceptions.*;
 
 public class VehicleController {
 
-    private static VehicleService vehicleService = new VehicleService();
+    private static VehicleService vehicleService;
+
+    public VehicleController(VehicleService vehicleService) {
+        this.vehicleService = vehicleService;
+    }
 
     public static void setRoutes(JavalinConfig config) {
         config.routes.get("/vehicles", ctx -> showVehicles(ctx));

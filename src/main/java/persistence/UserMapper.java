@@ -70,4 +70,8 @@ public class UserMapper {
     }
 
 
+    public boolean userExists(String mail, String telefon) {
+
+    }
+
 }

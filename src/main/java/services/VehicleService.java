@@ -26,7 +26,7 @@ public class VehicleService {
         return user.hasCar();
     }
 
-    public boolean licensePlateExists(String licensePlate) throws DatabaseException {
+    public boolean licensePlateExists(User user, String licensePlate) throws DatabaseException {
         return vehicleMapper.licensePlateExists(licensePlate);
     }
 }

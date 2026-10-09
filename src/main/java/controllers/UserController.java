@@ -4,11 +4,20 @@ import entities.User;
 import exceptions.IllegalUserDataException;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
+import persistence.ConnectionPool;
+import persistence.UserMapper;
 import services.UserService;
 
 public class UserController {
 
-    static UserService userService = new UserService();
+    private ConnectionPool connectionPool;
+    private UserService userService;
+    UserMapper userMapper;
+
+    public UserController(ConnectionPool connectionPool){
+        this.connectionPool = connectionPool;
+        this.userService = new UserService(userMapper);
+    }
 
     public static void setRoutes(JavalinConfig config) {
         config.routes.get("/", ctx -> ctx.redirect("/login"));

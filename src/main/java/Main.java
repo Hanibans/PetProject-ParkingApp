@@ -22,8 +22,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        public static void main(String[] args) {
-
             // Mappere (får poolen)
             UserMapper userMapper = new UserMapper(connectionPool);
             VehicleMapper vehicleMapper = new VehicleMapper(connectionPool);
@@ -54,4 +52,3 @@ public class Main {
         }
 
     }
-}

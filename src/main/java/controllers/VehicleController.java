@@ -5,6 +5,7 @@ import entities.Car;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 import services.VehicleService;
+import exceptions.*;
 
 public class VehicleController {
 
@@ -28,7 +29,7 @@ public class VehicleController {
                 java.util.Map.of("cars", user.getCars()));
     }
 
-    public static void addVehicle(Context ctx) {
+    public static void addVehicle(Context ctx) throws DatabaseException {
         User user = ctx.sessionAttribute("user");
         if (user == null) {
             ctx.redirect("/login");
@@ -73,7 +74,7 @@ public class VehicleController {
         ctx.redirect("/vehicles");
     }
 
-    public static void removeVehicle(Context ctx) {
+    public static void removeVehicle(Context ctx) throws DatabaseException {
         User user = ctx.sessionAttribute("user");
         if (user == null) {
             ctx.redirect("/login");

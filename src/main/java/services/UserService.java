@@ -1,7 +1,9 @@
 package services;
 
 import entities.User;
+import exceptions.DatabaseException;
 import exceptions.IllegalUserDataException;
+import persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,51 +12,47 @@ public class UserService {
 
     private List<User> users;
 
-    public UserService() {
-        this.users = new ArrayList<>();
-    }
 
-    public List<User> getUsers() {
-        return users;
-    }
+    private final UserMapper userMapper;
+    private final VehicleMapper vehicleMapper;
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public UserService(UserMapper userMapper, VehicleMapper vehicleMapper) {
+        this.userMapper = userMapper;
+        this.vehicleMapper = vehicleMapper;
     }
 
     public User login(String mail, String password) {
         if (mail == null || password == null) {
-          return null;
+            return null;
         }
-
-        for (User user : users) {
-            if (user.getMail().equals(mail)
-                    && user.getPassword().equals(password)) {
-                return user;
+        try {
+            User user = userMapper.getUserByMail(mail);
+            if (user == null || !user.getPassword().equals(password)) {
+                return null;
             }
+            for (Car car : vehicleMapper.getCarsByUserId(user.getId())) {
+                user.addCar(car);
+            }
+            return user;
+        } catch (DatabaseException e) {
+            return null;
         }
-
-        return null;
     }
 
     public User createUser(String mail, String telefon, String password) throws IllegalUserDataException {
-
         validateEmail(mail);
         validatePhoneNumber(telefon);
         validatePassword(password);
 
-        // Tjek om email eller telefonnummer allerede findes
-        for (User user : users) {
-            if (user.getMail().equals(mail) || user.getPhoneNumber().equals(telefon)) {
+        try {
+            if (userMapper.userExists(mail, telefon)) {
                 throw new IllegalUserDataException(
                         "Der findes allerede en konto med denne email eller dette telefonnummer.");
             }
+            return userMapper.createUser(new User(mail, telefon, password));
+        } catch (DatabaseException e) {
+            throw new IllegalUserDataException("Kunne ikke oprette brugeren. Prøv igen senere.");
         }
-
-        User user = new User(mail, telefon, password);
-        users.add(user);
-
-        return user;
     }
 
 

@@ -12,8 +12,7 @@ import java.util.List;
 public class UserMapper {
 
     ConnectionPool connectionPool;
-    private static final Logger logger =
-            LoggerFactory.getLogger(UserMapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserMapper.class);
 
     public UserMapper(ConnectionPool connectionPool){
         this.connectionPool = connectionPool;
@@ -69,4 +68,6 @@ public class UserMapper {
         }
         return user;
     }
+
+
 }

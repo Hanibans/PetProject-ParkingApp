@@ -2,10 +2,16 @@ package services;
 
 import entities.Parking;
 import entities.Zone;
+import persistence.ParkingMapper;
 
 import java.util.List;
 
 public class ParkingService {
+    private final ParkingMapper parkingMapper;
+
+    public ParkingService(ParkingMapper parkingMapper) {
+        this.parkingMapper = parkingMapper;
+    }
 
     public List<Parking> getParkingSpots(Zone zone) {
         return zone.getSpots();

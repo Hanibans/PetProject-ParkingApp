@@ -1,30 +1,32 @@
 package services;
 
-import entities.Car;
-import entities.User;
+import entities.*;
+import persistence.*;
+import exceptions.*;
 
 public class VehicleService {
 
-    public void addVehicle(User user, String licensePlate, String carType) {
-        Car car = new Car(licensePlate, carType);
-        user.addCar(car);
+    private final VehicleMapper vehicleMapper;
+
+    public VehicleService(VehicleMapper vehicleMapper) {
+        this.vehicleMapper = vehicleMapper;
     }
 
-    public void removeVehicle(User user, String licensePlate) {
-        user.getCars().removeIf(car -> car.getLicensePlate().equals(licensePlate)
-        );
+    public void addVehicle(User user, String licensePlate, String carType) throws DatabaseException {
+        vehicleMapper.addCar(user.getId(), licensePlate, carType);
+        user.addCar(new Car(licensePlate, carType));
+    }
+
+    public void removeVehicle(User user, String licensePlate) throws DatabaseException {
+        vehicleMapper.removeCar(user.getId(), licensePlate);
+        user.getCars().removeIf(car -> car.getLicensePlate().equals(licensePlate));
     }
 
     public boolean hasVehicle(User user) {
         return user.hasCar();
     }
 
-    public boolean licensePlateExists(User user, String licensePlate) {
-        for (Car car : user.getCars()) {
-            if (car.getLicensePlate().equalsIgnoreCase(licensePlate)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean licensePlateExists(String licensePlate) throws DatabaseException {
+        return vehicleMapper.licensePlateExists(licensePlate);
     }
 }

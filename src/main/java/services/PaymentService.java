@@ -4,8 +4,14 @@ import entities.Car;
 import entities.Parking;
 import entities.Payment;
 import entities.User;
+import persistence.PaymentMapper;
 
 public class PaymentService {
+    private final PaymentMapper paymentMapper;
+
+    public PaymentService(PaymentMapper paymentMapper) {
+        this.paymentMapper = paymentMapper;
+    }
 
     public Payment startPayment(
             User user,

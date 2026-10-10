@@ -1,11 +1,9 @@
 package controllers;
 
 import entities.User;
-import entities.Car;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
-import persistence.ConnectionPool;
-import persistence.VehicleMapper;
+import persistence.*;
 import services.VehicleService;
 import exceptions.*;
 

@@ -1,9 +1,14 @@
 package controllers;
 
+import entities.Parking;
 import entities.User;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
+import persistence.ConnectionPool;
+import persistence.ParkingMapper;
+import persistence.PaymentMapper;
 import services.ParkingService;
+import services.PaymentService;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,13 +16,18 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ParkingController {
+
+    private ConnectionPool connectionPool;
+    private ParkingMapper parkingMapper;
     private ParkingService parkingService;
 
-    public ParkingController(ParkingService parkingService) {
-        this.parkingService = parkingService;
+    public ParkingController(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+        this.parkingMapper = new ParkingMapper(connectionPool);
+        this.parkingService = new ParkingService(connectionPool);
     }
 
-    public static void setRoutes(JavalinConfig config) {
+    public void setRoutes(JavalinConfig config) {
         config.routes.get("/parking", ctx -> showParking(ctx));
         config.routes.get("/parking-zones", ctx -> getParkingZones(ctx));
         config.routes.get("/parking-areas", ctx -> getParkingAreas(ctx));
@@ -26,14 +36,14 @@ public class ParkingController {
 
     }
 
-    public static void showParking(Context ctx) {
+    public void showParking(Context ctx) {
         // Hent zone
         // Hent parkeringspladser
         // Send data til map.html
         ctx.redirect("/map");
     }
 
-    public static void getParkingZones(Context ctx) {
+    public void getParkingZones(Context ctx) {
         String url =
                 "http://wfs-kbhkort.kk.dk:80/k101/wfs" +
                         "?service=WFS" +
@@ -74,7 +84,7 @@ public class ParkingController {
         }
     }
 
-    private static void getParkingAreas(Context ctx) {
+    private void getParkingAreas(Context ctx) {
         String url =
                 "http://wfs-kbhkort.kk.dk:80/k101/wfs" +
                         "?service=WFS" +
@@ -121,7 +131,7 @@ public class ParkingController {
         }
     }
 
-    public static void startParking(Context ctx) {
+    public void startParking(Context ctx) {
 
         User user =
                 ctx.sessionAttribute("user");
@@ -166,7 +176,7 @@ public class ParkingController {
         );
     }
 
-    public static void stopParking(Context ctx) {
+    public void stopParking(Context ctx) {
 
         // Stop den aktive parkering
 

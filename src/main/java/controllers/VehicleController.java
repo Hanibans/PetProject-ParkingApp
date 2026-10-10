@@ -4,18 +4,25 @@ import entities.User;
 import entities.Car;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
+import persistence.ConnectionPool;
+import persistence.VehicleMapper;
 import services.VehicleService;
 import exceptions.*;
 
 public class VehicleController {
 
-    private static VehicleService vehicleService;
+    private VehicleService vehicleService;
+    private VehicleMapper vehicleMapper;
+    private ConnectionPool connectionPool;
 
-    public VehicleController(VehicleService vehicleService) {
-        this.vehicleService = vehicleService;
+    public VehicleController(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+        this.vehicleService = new VehicleService(connectionPool);
+        this.vehicleMapper = new VehicleMapper(connectionPool);
+
     }
 
-    public static void setRoutes(JavalinConfig config) {
+    public void setRoutes(JavalinConfig config) {
         config.routes.get("/vehicles", ctx -> showVehicles(ctx));
         config.routes.get("/vehicles/add", ctx -> addVehicle(ctx));
         config.routes.post("/vehicles/add", ctx -> addVehicle(ctx));
@@ -23,7 +30,7 @@ public class VehicleController {
     }
 
 
-    public static void showVehicles(Context ctx) {
+    public void showVehicles(Context ctx) {
         User user = ctx.sessionAttribute("user");
         if (user == null) {
             ctx.redirect("/login");
@@ -33,7 +40,7 @@ public class VehicleController {
                 java.util.Map.of("cars", user.getCars()));
     }
 
-    public static void addVehicle(Context ctx) throws DatabaseException {
+    public void addVehicle(Context ctx) throws DatabaseException {
         User user = ctx.sessionAttribute("user");
         if (user == null) {
             ctx.redirect("/login");
@@ -79,7 +86,7 @@ public class VehicleController {
         ctx.redirect("/vehicles");
     }
 
-    public static void removeVehicle(Context ctx) throws DatabaseException {
+    public void removeVehicle(Context ctx) throws DatabaseException {
         User user = ctx.sessionAttribute("user");
         if (user == null) {
             ctx.redirect("/login");

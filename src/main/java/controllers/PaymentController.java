@@ -3,22 +3,31 @@ package controllers;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 import org.jetbrains.annotations.NotNull;
+import persistence.ConnectionPool;
+import persistence.PaymentMapper;
+import persistence.UserMapper;
 import services.PaymentService;
+import services.UserService;
 
 public class PaymentController {
 
-    private final PaymentService paymentService;
+    private ConnectionPool connectionPool;
+    private PaymentService paymentService;
+    private PaymentMapper paymentMapper;
 
-    public static void setRoutes(JavalinConfig config) {
+    public PaymentController(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+        this.paymentService = new PaymentService(connectionPool);
+        this.paymentMapper = new PaymentMapper(connectionPool);
+    }
+
+    public void setRoutes(JavalinConfig config) {
         config.routes.get("/payments", ctx -> showPayments(ctx));
         config.routes.get("/parkinghistory", ctx -> showParkingHistory(ctx));
     }
 
-    public PaymentController(PaymentService paymentService) {
-        this.paymentService = paymentService;
-    }
 
-    public static void showPayments(Context ctx) {
+    public void showPayments(Context ctx) {
         // Hent brugerens betalinger
         // Send dem til payments.html
     }
@@ -29,6 +38,6 @@ public class PaymentController {
         // Gem betaling
     }
 
-    private static void showParkingHistory(@NotNull Context ctx) {
+    private void showParkingHistory(@NotNull Context ctx) {
     }
 }

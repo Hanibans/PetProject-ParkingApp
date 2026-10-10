@@ -6,10 +6,13 @@ import exceptions.*;
 
 public class VehicleService {
 
+    private ConnectionPool connectionPool;
     private final VehicleMapper vehicleMapper;
 
-    public VehicleService(VehicleMapper vehicleMapper) {
-        this.vehicleMapper = vehicleMapper;
+    public VehicleService(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+        this.vehicleMapper = new VehicleMapper(connectionPool);
+
     }
 
     public void addVehicle(User user, String licensePlate, String carType) throws DatabaseException {

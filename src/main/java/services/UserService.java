@@ -13,13 +13,14 @@ public class UserService {
 
     private List<User> users;
 
-
+    private ConnectionPool connectionPool;
     private final UserMapper userMapper;
     private final VehicleMapper vehicleMapper;
 
-    public UserService(UserMapper userMapper, VehicleMapper vehicleMapper) {
-        this.userMapper = userMapper;
-        this.vehicleMapper = vehicleMapper;
+    public UserService(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+        this.userMapper = new UserMapper(connectionPool);
+        this.vehicleMapper = new VehicleMapper(connectionPool);
     }
 
     public User login(String mail, String password) {

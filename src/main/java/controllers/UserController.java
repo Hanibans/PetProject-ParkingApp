@@ -12,13 +12,16 @@ import services.UserService;
 public class UserController {
 
     private ConnectionPool connectionPool;
-    private static UserService userService;
+    private UserService userService;
+    private UserMapper userMapper;
 
-    public UserController(UserService userService){
-        this.userService = userService;
+    public UserController(ConnectionPool connectionPool){
+      this.connectionPool = connectionPool;
+      this.userService = new UserService(connectionPool);
+      this.userMapper = new UserMapper(connectionPool);
     }
 
-    public static void setRoutes(JavalinConfig config) {
+    public void setRoutes(JavalinConfig config) {
         config.routes.get("/", ctx -> ctx.redirect("/login"));
         config.routes.post("/login", ctx -> login(ctx));
         config.routes.get("/login", ctx -> ctx.redirect("/login.html"));
@@ -30,7 +33,7 @@ public class UserController {
         config.routes.get("/menu", ctx -> ctx.redirect("/menu.html"));
     }
 
-    public static void login(Context ctx) {
+    public void login(Context ctx) {
         String email = ctx.formParam("email");
         String password = ctx.formParam("password");
 
@@ -44,7 +47,7 @@ public class UserController {
         }
     }
 
-    public static void createUser(Context ctx) {
+    public void createUser(Context ctx) {
         String email = ctx.formParam("email");
         String phonenumber = ctx.formParam("phonenumber");
         String password = ctx.formParam("password");
@@ -61,12 +64,12 @@ public class UserController {
 
     }
 
-    public static void logout(Context ctx) {
+    public void logout(Context ctx) {
         ctx.sessionAttribute("user", null);
         ctx.redirect("/login");
     }
 
-    public static void showAccount(Context ctx) {
+    public void showAccount(Context ctx) {
         User user = ctx.sessionAttribute("user");
 
         if (user == null) {

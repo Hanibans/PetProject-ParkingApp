@@ -4,9 +4,7 @@ import entities.User;
 import exceptions.IllegalUserDataException;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
-import persistence.ConnectionPool;
-import persistence.UserMapper;
-import persistence.VehicleMapper;
+import persistence.*;
 import services.UserService;
 
 public class UserController {

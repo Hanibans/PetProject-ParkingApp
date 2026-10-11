@@ -38,6 +38,24 @@ public class VehicleMapper {
         return cars;
     }
 
+    public List<Car> getAllCars() throws DatabaseException {
+        List<Car> cars = new ArrayList<>();
+        String sql = "SELECT license_plate, car_type FROM car";
+        try (Connection c = connectionPool.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                cars.add(new Car(rs.getString("license_plate"),
+                        rs.getString("car_type")));
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new DatabaseException("Kunne ikke hente biler");
+        }
+        return cars;
+    }
+
+
     public boolean licensePlateExists(String licensePlate) throws DatabaseException {
         String sql = "SELECT 1 FROM car WHERE license_plate = ?";
         try (Connection c = connectionPool.getConnection();

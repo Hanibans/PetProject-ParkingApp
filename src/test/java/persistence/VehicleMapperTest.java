@@ -113,4 +113,5 @@ public class VehicleMapperTest {
         assertFalse(vehicleMapper.licensePlateExists("AB12345"));
         assertEquals(0, vehicleMapper.getCarsByUserId(1).size());
     }
+
 }

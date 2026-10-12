@@ -1,5 +1,6 @@
+
 <!DOCTYPE html>
-<html lang="da">
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,96 @@
     <link rel="stylesheet" href="/parkinghistory.css">
     <link rel="stylesheet" href="/colors.css">
 </head>
+
+
 <body>
 
+<div class="account-page">
+
+    <!-- Toppen -->
+    <div class="account-header history-header">
+
+        <a href="/menu" class="back-button">←</a>
+
+        <h1>Min parkeringshistorik</h1>
+
+    </div>
+
+    <!-- Parkeringshistorik -->
+    <div class="account-content">
+
+        <h2>Dine tidligere parkeringer</h2>
+
+        <!-- Hvis der ikke er nogen parkeringer -->
+        <div th:if="${#lists.isEmpty(history)}"
+             class="history-empty">
+
+            <p>Du har ingen afsluttede parkeringer endnu.</p>
+
+        </div>
+
+        <!-- Liste over parkeringer -->
+        <div th:each="parking : ${history}"
+             class="history-card">
+
+            <div class="history-card-header">
+
+                <h3 th:text="${parking.licensePlate}">
+                    CD67890
+                </h3>
+
+                <span class="history-zone"
+                      th:text="${parking.zoneName}">
+                    Blå
+                </span>
+
+            </div>
+
+            <div class="history-field">
+                <label>Sted</label>
+                <span th:text="${parking.address != null
+                    ? parking.address : 'Ukendt adresse'}">
+                    Adresse
+                </span>
+            </div>
+
+            <div class="history-field">
+                <label>Parkeringsordning</label>
+                <span th:text="${parking.parkingSpotType}">
+                    regular
+                </span>
+            </div>
+
+            <div class="history-field">
+                <label>Starttidspunkt</label>
+                <span th:text="${parking.startTime}">
+                    Starttidspunkt
+                </span>
+            </div>
+
+            <div class="history-field">
+                <label>Sluttidspunkt</label>
+                <span th:text="${parking.endTime}">
+                    Sluttidspunkt
+                </span>
+            </div>
+
+            <div class="history-total">
+                <span>Samlet pris</span>
+
+                <strong th:text="${parking.totalCost != null
+                    ? parking.totalCost + ' kr.'
+                    : 'Mangler betaling'}">
+                    Samlet pris
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 </body>
+
 </html>

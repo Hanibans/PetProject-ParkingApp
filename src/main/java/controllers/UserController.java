@@ -56,6 +56,29 @@ public class UserController {
                 ctx.result(e.getMessage());
             }
         });
+
+        config.routes.get("/parkinghistory", ctx -> {
+            User user = ctx.sessionAttribute("user");
+
+            if (user == null) {
+                ctx.redirect("/login");
+                return;
+            }
+
+            try {
+                java.util.List<java.util.Map<String, Object>> history =
+                        new ParkingMapper(connectionPool)
+                                .getParkingHistoryForUser(user.getId());
+
+                ctx.render("parkinghistory.html",
+                        java.util.Map.of("history", history));
+
+            } catch (exceptions.DatabaseException e) {
+                ctx.status(500);
+                ctx.result(e.getMessage());
+            }
+        });
+
     }
 
     public void login(Context ctx) {

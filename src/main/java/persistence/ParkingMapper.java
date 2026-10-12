@@ -43,35 +43,32 @@ public class ParkingMapper {
     }
 
 
+
     public int startParking(
             int carId,
             String zoneName,
-            String parkingOrder
+            String parkingOrder,
+            String street
     ) throws DatabaseException {
 
-        String sql = """
-            INSERT INTO parking (
-                car_id,
-                zone_id,
-                parking_spot_type_id
-            )
-            SELECT
-                ?,
-                z.zone_id,
-                pst.parking_spot_type_id
-            FROM zone z
-            CROSS JOIN parking_spot_type pst
-            WHERE LOWER(z.name) = LOWER(?)
-              AND pst.name = ?
-            RETURNING parking_id
-            """;
+        String sql =
+                "INSERT INTO parking (" +
+                        "car_id, zone_id, parking_spot_type_id, parking_address" +
+                        ") " +
+                        "SELECT ?, z.zone_id, pst.parking_spot_type_id, ? " +
+                        "FROM zone z " +
+                        "CROSS JOIN parking_spot_type pst " +
+                        "WHERE LOWER(z.name) = LOWER(?) " +
+                        "AND pst.name = ? " +
+                        "RETURNING parking_id";
 
         try (Connection c = connectionPool.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setInt(1, carId);
-            ps.setString(2, zoneName);
-            ps.setString(3, parkingOrder);
+            ps.setString(2, street);
+            ps.setString(3, zoneName);
+            ps.setString(4, parkingOrder);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -89,28 +86,30 @@ public class ParkingMapper {
         }
     }
 
+
     public java.util.Map<String, Object> getActiveParkingForUser(int userId)
             throws DatabaseException {
 
         String sql = """
-            SELECT
-                p.parking_id,
-                c.license_plate,
-                z.name AS zone_name,
-                z.price_per_hour,
-                p.parking_start_time,
-                pst.name AS parking_spot_type
-            FROM parking p
-            JOIN car c ON p.car_id = c.car_id
-            JOIN zone z ON p.zone_id = z.zone_id
-            JOIN parking_spot_type pst
-                ON p.parking_spot_type_id =
-                   pst.parking_spot_type_id
-            WHERE c.user_id = ?
-              AND p.parking_end_time IS NULL
-            ORDER BY p.parking_start_time DESC
-            LIMIT 1
-            """;
+        SELECT
+            p.parking_id,
+            c.license_plate,
+            z.name AS zone_name,
+            z.price_per_hour,
+            p.parking_start_time,
+            p.parking_address,
+            pst.name AS parking_spot_type
+        FROM parking p
+        JOIN car c ON p.car_id = c.car_id
+        JOIN zone z ON p.zone_id = z.zone_id
+        JOIN parking_spot_type pst
+            ON p.parking_spot_type_id =
+               pst.parking_spot_type_id
+        WHERE c.user_id = ?
+          AND p.parking_end_time IS NULL
+        ORDER BY p.parking_start_time DESC
+        LIMIT 1
+        """;
 
         try (Connection c = connectionPool.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -128,6 +127,8 @@ public class ParkingMapper {
                             rs.getString("license_plate"));
                     parking.put("zoneName",
                             rs.getString("zone_name"));
+                    parking.put("address",
+                            rs.getString("parking_address"));
                     parking.put("pricePerHour",
                             rs.getBigDecimal("price_per_hour"));
                     parking.put("startTime",
@@ -188,6 +189,74 @@ public class ParkingMapper {
 
             throw new DatabaseException(
                     "Kunne ikke stoppe parkeringen.");
+        }
+    }
+
+
+    public java.util.List<java.util.Map<String, Object>>
+    getParkingHistoryForUser(int userId)
+            throws DatabaseException {
+
+        String sql =
+                "SELECT p.parking_start_time, " +
+                        "p.parking_end_time, " +
+                        "c.license_plate, " +
+                        "z.name AS zone_name, " +
+                        "z.price_per_hour, " +
+                        "pst.name AS parking_spot_type, " +
+                        "pay.total_cost " +
+                        "FROM parking p " +
+                        "JOIN car c ON p.car_id = c.car_id " +
+                        "JOIN zone z ON p.zone_id = z.zone_id " +
+                        "JOIN parking_spot_type pst " +
+                        "ON p.parking_spot_type_id = " +
+                        "pst.parking_spot_type_id " +
+                        "LEFT JOIN payment pay " +
+                        "ON p.parking_id = pay.parking_id " +
+                        "WHERE c.user_id = ? " +
+                        "AND p.parking_end_time IS NOT NULL " +
+                        "ORDER BY p.parking_end_time DESC";
+
+        java.util.List<java.util.Map<String, Object>> history =
+                new java.util.ArrayList<>();
+
+        try (Connection c = connectionPool.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    java.util.Map<String, Object> parking =
+                            new java.util.HashMap<>();
+
+                    parking.put("licensePlate",
+                            rs.getString("license_plate"));
+                    parking.put("zoneName",
+                            rs.getString("zone_name"));
+                    parking.put("parkingSpotType",
+                            rs.getString("parking_spot_type"));
+                    parking.put("startTime",
+                            rs.getTimestamp("parking_start_time")
+                                    .toInstant().toString());
+                    parking.put("endTime",
+                            rs.getTimestamp("parking_end_time")
+                                    .toInstant().toString());
+                    parking.put("pricePerHour",
+                            rs.getBigDecimal("price_per_hour"));
+                    parking.put("totalCost",
+                            rs.getBigDecimal("total_cost"));
+
+                    history.add(parking);
+                }
+
+                return history;
+            }
+
+        } catch (SQLException e) {
+            logger.error("Kunne ikke hente parkeringshistorik", e);
+            throw new DatabaseException(
+                    "Kunne ikke hente parkeringshistorikken.");
         }
     }
 }

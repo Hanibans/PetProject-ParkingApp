@@ -18,6 +18,12 @@
   <span th:text="${parking.zoneName}">Zone</span>
 </p>
 
+<p><strong>Sted:</strong>
+  <span th:text="${parking.address != null ? parking.address : 'Ukendt adresse'}">
+        Ukendt adresse
+    </span>
+</p>
+
 <p>
   <strong>Timepris:</strong>
   <span th:text="${parking.pricePerHour + ' kr./time'}">Pris</span>

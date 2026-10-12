@@ -214,10 +214,13 @@ public class ParkingController {
                     licensePlate
             );
 
+            String street = ctx.formParam("street");
+
             int parkingId = parkingMapper.startParking(
                     carId,
                     zone,
-                    parkingOrder
+                    parkingOrder,
+                    street
             );
 
             ctx.status(200);

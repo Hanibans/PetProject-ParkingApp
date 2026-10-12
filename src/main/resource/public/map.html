@@ -802,7 +802,8 @@
                             zoneName,
                             parkingOrder,
                             feature.id,
-                            licensePlate
+                            licensePlate,
+                            street
                         );
                     };
 
@@ -832,7 +833,8 @@
         zone,
         parkingOrder,
         parkingAreaId,
-        licensePlate
+        licensePlate,
+        street
     ) {
         console.log("Starter parkering...");
         console.log("Betalingszone:", zone);
@@ -849,7 +851,8 @@
                 "zone=" + encodeURIComponent(zone) +
                 "&parkingOrder=" + encodeURIComponent(parkingOrder) +
                 "&parkingAreaId=" + encodeURIComponent(parkingAreaId) +
-                "&licensePlate=" + encodeURIComponent(licensePlate)
+                "&licensePlate=" + encodeURIComponent(licensePlate) +
+                "&street=" + encodeURIComponent(street)
         })
             .then(response => {
                 if (!response.ok) {

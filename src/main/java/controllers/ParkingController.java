@@ -257,9 +257,39 @@ public class ParkingController {
         return "regular";
     }
 
+
     public void stopParking(Context ctx) {
+        User user = ctx.sessionAttribute("user");
 
-        // Stop den aktive parkering
+        if (user == null) {
+            ctx.status(401);
+            ctx.result("Du skal logge ind for at stoppe parkering.");
+            return;
+        }
 
+        try {
+            java.util.Map<String, Object> parking =
+                    parkingMapper.getActiveParkingForUser(user.getId());
+
+            if (parking == null) {
+                ctx.status(400);
+                ctx.result("Du har ingen aktiv parkering.");
+                return;
+            }
+
+            int parkingId = (int) parking.get("parkingId");
+
+            java.math.BigDecimal totalCost =
+                    parkingMapper.stopParking(parkingId, user.getId());
+
+            ctx.json(java.util.Map.of(
+                    "message", "Parkeringen er stoppet.",
+                    "totalCost", totalCost
+            ));
+
+        } catch (exceptions.DatabaseException e) {
+            ctx.status(400);
+            ctx.result(e.getMessage());
+        }
     }
 }

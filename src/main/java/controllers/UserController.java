@@ -12,11 +12,13 @@ public class UserController {
     private ConnectionPool connectionPool;
     private UserService userService;
     private UserMapper userMapper;
+    private ParkingMapper parkingMapper;
 
     public UserController(ConnectionPool connectionPool){
       this.connectionPool = connectionPool;
       this.userService = new UserService(connectionPool);
       this.userMapper = new UserMapper(connectionPool);
+        this.parkingMapper = new ParkingMapper(connectionPool);
     }
 
     public void setRoutes(JavalinConfig config) {
@@ -29,7 +31,31 @@ public class UserController {
         config.routes.get("/account", ctx -> showAccount(ctx));
         config.routes.get("/support", ctx -> ctx.redirect("/support.html"));
         config.routes.get("/menu", ctx -> ctx.redirect("/menu.html"));
-        config.routes.get("/active-parking", ctx -> ctx.render("active-parking.html"));
+        config.routes.get("/active-parking", ctx -> {
+            User user = ctx.sessionAttribute("user");
+
+            if (user == null) {
+                ctx.redirect("/login");
+                return;
+            }
+
+            try {
+                java.util.Map<String, Object> parking =
+                        parkingMapper.getActiveParkingForUser(user.getId());
+
+                if (parking == null) {
+                    ctx.redirect("/map.html");
+                    return;
+                }
+
+                ctx.render("active-parking.html",
+                        java.util.Map.of("parking", parking));
+
+            } catch (exceptions.DatabaseException e) {
+                ctx.status(500);
+                ctx.result(e.getMessage());
+            }
+        });
     }
 
     public void login(Context ctx) {

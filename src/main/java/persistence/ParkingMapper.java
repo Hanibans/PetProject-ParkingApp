@@ -89,5 +89,105 @@ public class ParkingMapper {
         }
     }
 
+    public java.util.Map<String, Object> getActiveParkingForUser(int userId)
+            throws DatabaseException {
 
+        String sql = """
+            SELECT
+                p.parking_id,
+                c.license_plate,
+                z.name AS zone_name,
+                z.price_per_hour,
+                p.parking_start_time,
+                pst.name AS parking_spot_type
+            FROM parking p
+            JOIN car c ON p.car_id = c.car_id
+            JOIN zone z ON p.zone_id = z.zone_id
+            JOIN parking_spot_type pst
+                ON p.parking_spot_type_id =
+                   pst.parking_spot_type_id
+            WHERE c.user_id = ?
+              AND p.parking_end_time IS NULL
+            ORDER BY p.parking_start_time DESC
+            LIMIT 1
+            """;
+
+        try (Connection c = connectionPool.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    java.util.Map<String, Object> parking =
+                            new java.util.HashMap<>();
+
+                    parking.put("parkingId",
+                            rs.getInt("parking_id"));
+                    parking.put("licensePlate",
+                            rs.getString("license_plate"));
+                    parking.put("zoneName",
+                            rs.getString("zone_name"));
+                    parking.put("pricePerHour",
+                            rs.getBigDecimal("price_per_hour"));
+                    parking.put("startTime",
+                            rs.getTimestamp("parking_start_time")
+                                    .toInstant().toString());
+                    parking.put("parkingSpotType",
+                            rs.getString("parking_spot_type"));
+
+                    return parking;
+                }
+
+                return null;
+            }
+
+        } catch (SQLException e) {
+            logger.error("Kunne ikke hente aktiv parkering", e);
+            throw new DatabaseException(
+                    "Kunne ikke hente den aktive parkering");
+        }
+    }
+
+
+    public java.math.BigDecimal stopParking(int parkingId, int userId)
+            throws DatabaseException {
+
+        String sql =
+                "UPDATE parking p " +
+                        "SET parking_end_time = NOW() " +
+                        "FROM car c, zone z " +
+                        "WHERE p.car_id = c.car_id " +
+                        "AND p.zone_id = z.zone_id " +
+                        "AND p.parking_id = ? " +
+                        "AND c.user_id = ? " +
+                        "AND p.parking_end_time IS NULL " +
+                        "RETURNING EXTRACT(EPOCH FROM " +
+                        "(p.parking_end_time - p.parking_start_time)) " +
+                        "* z.price_per_hour / 3600.0 AS total_cost";
+
+        try (Connection c = connectionPool.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setInt(1, parkingId);
+            ps.setInt(2, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    return rs.getBigDecimal("total_cost")
+                            .setScale(2, java.math.RoundingMode.HALF_UP);
+                }
+
+                throw new DatabaseException(
+                        "Ingen aktiv parkering blev fundet.");
+            }
+
+        } catch (SQLException e) {
+            logger.error("Kunne ikke stoppe parkering", e);
+
+            throw new DatabaseException(
+                    "Kunne ikke stoppe parkeringen.");
+        }
+    }
 }

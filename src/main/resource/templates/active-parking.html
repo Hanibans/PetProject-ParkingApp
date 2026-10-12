@@ -1,24 +1,111 @@
-
 <!DOCTYPE html>
-<html lang="da">
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aktiv parkering</title>
 </head>
 <body>
-
 <h1>Din aktive parkering</h1>
 
-<p><strong>Nummerplade:</strong> <span id="licensePlate">Indlæses...</span></p>
-<p><strong>Zone:</strong> <span id="zone">Indlæses...</span></p>
-<p><strong>Timepris:</strong> <span id="price">Indlæses...</span></p>
-<p><strong>Starttidspunkt:</strong> <span id="startTime">Indlæses...</span></p>
-<p><strong>Parkeringstid:</strong> <span id="duration">00:00:00</span></p>
+<p>
+  <strong>Nummerplade:</strong>
+  <span th:text="${parking.licensePlate}">Nummerplade</span>
+</p>
+
+<p>
+  <strong>Zone:</strong>
+  <span th:text="${parking.zoneName}">Zone</span>
+</p>
+
+<p>
+  <strong>Timepris:</strong>
+  <span th:text="${parking.pricePerHour + ' kr./time'}">Pris</span>
+</p>
+
+<p>
+  <strong>Parkeringsordning:</strong>
+  <span th:text="${parking.parkingSpotType}">Parkeringsordning</span>
+</p>
+
+<p>
+  <strong>Starttidspunkt:</strong>
+  <span id="startTime"
+        th:text="${parking.startTime}">Starttidspunkt</span>
+</p>
+
+<p>
+  <strong>Parkeringstid:</strong>
+  <span id="duration">00:00:00</span>
+</p>
 
 <button id="stopParkingButton" type="button">
   Stop parkering
 </button>
+
+<script th:inline="javascript">
+  const startTime = new Date(
+          /*[[${parking.startTime}]]*/ ""
+  );
+
+  function updateDuration() {
+    const now = new Date();
+    const seconds = Math.max(
+            0,
+            Math.floor((now - startTime) / 1000)
+    );
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    document.getElementById("duration").textContent =
+            String(hours).padStart(2, "0") + ":" +
+            String(minutes).padStart(2, "0") + ":" +
+            String(remainingSeconds).padStart(2, "0");
+  }
+
+  updateDuration();
+  setInterval(updateDuration, 1000);
+</script>
+
+
+<script>
+  document.getElementById("stopParkingButton")
+          .addEventListener("click", async function () {
+
+            const button = this;
+            button.disabled = true;
+            button.textContent = "Stopper parkering...";
+
+            try {
+              const response = await fetch("/parking/stop", {
+                method: "POST"
+              });
+
+              if (!response.ok) {
+                const message = await response.text();
+                throw new Error(message);
+              }
+
+              const result = await response.json();
+
+              alert(
+                      "Parkeringen er stoppet!\n" +
+                      "Samlet pris: " +
+                      Number(result.totalCost).toFixed(2) +
+                      " kr."
+              );
+
+              window.location.href = "/parkinghistory";
+
+            } catch (error) {
+              alert("Fejl: " + error.message);
+              button.disabled = false;
+              button.textContent = "Stop parkering";
+            }
+          });
+</script>
 
 </body>
 </html>

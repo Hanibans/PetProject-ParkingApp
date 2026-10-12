@@ -25,6 +25,7 @@ public class VehicleController {
         config.routes.get("/vehicles/add", ctx -> addVehicle(ctx));
         config.routes.post("/vehicles/add", ctx -> addVehicle(ctx));
         config.routes.post("/vehicles/remove", ctx -> removeVehicle(ctx));
+        config.routes.get("/my-vehicles", ctx -> getMyVehicles(ctx));
     }
 
 
@@ -94,6 +95,19 @@ public class VehicleController {
         String licensePlate = ctx.formParam("licensePlate");
         vehicleService.removeVehicle(user, licensePlate);
         ctx.redirect("/vehicles");
+    }
+
+
+    public void getMyVehicles(Context ctx) {
+        User user = ctx.sessionAttribute("user");
+
+        if (user == null) {
+            ctx.status(401);
+            ctx.result("Du er ikke logget ind.");
+            return;
+        }
+
+        ctx.json(user.getCars());
     }
 
 }

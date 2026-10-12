@@ -42,4 +42,52 @@ public class ParkingMapper {
         return zones;
     }
 
+
+    public int startParking(
+            int carId,
+            String zoneName,
+            String parkingOrder
+    ) throws DatabaseException {
+
+        String sql = """
+            INSERT INTO parking (
+                car_id,
+                zone_id,
+                parking_spot_type_id
+            )
+            SELECT
+                ?,
+                z.zone_id,
+                pst.parking_spot_type_id
+            FROM zone z
+            CROSS JOIN parking_spot_type pst
+            WHERE LOWER(z.name) = LOWER(?)
+              AND pst.name = ?
+            RETURNING parking_id
+            """;
+
+        try (Connection c = connectionPool.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setInt(1, carId);
+            ps.setString(2, zoneName);
+            ps.setString(3, parkingOrder);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("parking_id");
+                }
+
+                throw new DatabaseException(
+                        "Kunne ikke finde betalingszonen eller parkeringsordningen"
+                );
+            }
+
+        } catch (SQLException e) {
+            logger.error("Kunne ikke starte parkering", e);
+            throw new DatabaseException("Kunne ikke gemme parkeringen");
+        }
+    }
+
+
 }

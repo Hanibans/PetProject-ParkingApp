@@ -94,6 +94,8 @@
         13
     );
 
+    let parkingLayer = L.layerGroup().addTo(map);
+
 
     // OpenStreetMap
     L.tileLayer(
@@ -373,395 +375,515 @@
     // PARKERINGSAREALER
     // ==========================================
 
+
     let parkingAreas = [];
 
-    let parkingLayer = null;
+    let parkingZoneFeatures = [];
 
+    function pointInRing(lon, lat, ring) {
+        let inside = false;
 
-    // Hent parkeringsarealer fra Java-backend
-    fetch("/parking-areas")
+        for (let i = 0, j = ring.length - 1;
+             i < ring.length;
+             j = i++) {
 
-        .then(response => response.json())
+            const xi = ring[i][0];
+            const yi = ring[i][1];
+            const xj = ring[j][0];
+            const yj = ring[j][1];
 
-        .then(data => {
+            const intersects =
+                ((yi > lat) !== (yj > lat)) &&
+                (lon < (xj - xi) * (lat - yi) /
+                    (yj - yi) + xi);
 
-            console.log(
-                "Parkeringsarealer:",
-                data
+            if (intersects) {
+                inside = !inside;
+            }
+        }
+
+        return inside;
+    }
+
+    function pointInPolygon(lon, lat, polygon) {
+        if (!polygon.length ||
+            !pointInRing(lon, lat, polygon[0])) {
+            return false;
+        }
+
+        // Undgå at regne områder inden i huller
+        // i polygonen som en del af zonen.
+        for (let i = 1; i < polygon.length; i++) {
+            if (pointInRing(lon, lat, polygon[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function findParkingZone(latlng) {
+        const lon = latlng.lng;
+        const lat = latlng.lat;
+
+        return parkingZoneFeatures.find(function(feature) {
+            const geometry = feature.geometry;
+
+            if (!geometry) {
+                return false;
+            }
+
+            if (geometry.type === "Polygon") {
+                return pointInPolygon(
+                    lon, lat, geometry.coordinates
+                );
+            }
+
+            if (geometry.type === "MultiPolygon") {
+                return geometry.coordinates.some(
+                    function(polygon) {
+                        return pointInPolygon(
+                            lon, lat, polygon
+                        );
+                    }
+                );
+            }
+
+            return false;
+        }) || null;
+    }
+    let parkingRequestId = 0;
+
+    async function loadParkingAreas() {
+        const bounds = map.getBounds();
+
+        const params = new URLSearchParams({
+            west: bounds.getWest(),
+            south: bounds.getSouth(),
+            east: bounds.getEast(),
+            north: bounds.getNorth()
+        });
+
+        const requestId = ++parkingRequestId;
+
+        try {
+            const response = await fetch(
+                "/parking-areas?" + params.toString()
             );
 
+            if (!response.ok) {
+                throw new Error("Kunne ikke hente parkeringsdata");
+            }
 
-            parkingAreas =
-                data.features;
+            const data = await response.json();
 
+            // Ignorer gamle svar, hvis kortet allerede er flyttet igen
+            if (requestId !== parkingRequestId) {
+                return;
+            }
+
+            parkingAreas = data.features || [];
 
             console.log(
-                "Antal parkeringsarealer:",
+                "Parkeringspladser i synligt område:",
                 parkingAreas.length
             );
 
-        })
+            showParkingAreas("");
 
-        .catch(error => {
-
+        } catch (error) {
             console.error(
-                "Kunne ikke hente parkeringsarealer:",
+                "Kunne ikke hente parkeringspladser:",
                 error
             );
+        }
+    }
 
-        });
+    // Hent data, når kortet flyttes eller zoomes
+    map.on("moveend", loadParkingAreas);
+
+    // Hent data første gang
+    loadParkingAreas();
+
 
 
     // ==========================================
     // VIS PARKERINGSAREALER
     // ==========================================
 
+
     function showParkingAreas(zoneName) {
 
-        // Fjern tidligere parkeringsarealer
-        if (parkingLayer !== null) {
-
-            map.removeLayer(
-                parkingLayer
-            );
-
+        if (map.getZoom() < 18) {
+            parkingLayer.clearLayers();
+            return;
         }
 
+        // Fjern tidligere parkeringsikoner
+        if (parkingLayer !== null) {
+            map.removeLayer(parkingLayer);
+        }
 
-        // Find kun parkeringsarealer
-        // der hører til den valgte zone
-        const matchingAreas =
-            parkingAreas.filter(function(area) {
+        parkingLayer = L.layerGroup().addTo(map);
 
-                const parkingZone =
-                    area.properties.p_ordning;
-
-
-                if (!parkingZone) {
-                    return false;
-                }
-
-
-                return parkingZone
-                    .toLowerCase()
-                    .includes(
-                        zoneName.toLowerCase()
-                    );
-
-            });
-
+        const matchingAreas = parkingAreas;
 
         console.log(
-            "Parkeringsarealer i " +
-            zoneName +
-            " zone:",
+            "Parkeringsarealer i " + zoneName + " zone:",
             matchingAreas
         );
 
+        // Saml parkeringsikoner i ét lag
+        parkingLayer = L.layerGroup().addTo(map);
 
-        // Lav et nyt GeoJSON-lag
-        parkingLayer =
-            L.geoJSON(
-                {
-                    type: "FeatureCollection",
-                    features: matchingAreas
-                },
-                {
+        // Gem alle markører, så vi kan styre dem efter zoomniveau
+        const parkingMarkers = [];
 
-                    style: {
+        function updateParkingMarkers() {
+            const zoom = map.getZoom();
 
-                        color: "#333333",
+            parkingMarkers.forEach(function(marker) {
+                const markerZoom = marker.options.showFromZoom;
 
-                        weight: 2,
-
-                        fillColor: "#ffffff",
-
-                        fillOpacity: 0.7
-
-                    },
-
-
-                    onEachFeature: function(feature, layer) {
-
-                        const properties = feature.properties;
-
-                        const street =
-                            properties.vejnavn || "Ukendt vej";
-
-                        const numberOfSpaces =
-                            properties.antal_p_pladser || 0;
-
-                        const parkingType =
-                            properties.p_type || "Parkering";
-
-                        layer.bindPopup(`
-        <b>${street}</b>
-        <br>
-        ${numberOfSpaces} parkeringspladser
-        <br>
-        ${parkingType}
-        <br><br>
-
-        <button
-            class="start-parking-button"
-            type="button">
-            Start parkering
-        </button>
-    `);
-
-                        layer.on("click", function() {
-
-                            console.log(
-                                "Valgt parkeringsareal:",
-                                properties
-                            );
-
-                            layer.openPopup();
-
-                            const popup =
-                                layer.getPopup();
-
-                            const popupElement =
-                                popup.getElement();
-
-                            if (popupElement) {
-
-                                const button =
-                                    popupElement.querySelector(
-                                        ".start-parking-button"
-                                    );
-
-                                if (button) {
-
-                                    button.addEventListener(
-                                        "click",
-                                        function(event) {
-
-                                            event.stopPropagation();
-
-                                            fetch("/my-vehicles")
-                                                .then(response => {
-
-                                                    if (!response.ok) {
-                                                        throw new Error(
-                                                            "Kunne ikke hente biler"
-                                                        );
-                                                    }
-
-                                                    return response.json();
-                                                })
-                                                .then(cars => {
-
-                                                    if (cars.length === 0) {
-
-                                                        const popup =
-                                                            document.getElementById(
-                                                                "no-vehicle-popup"
-                                                            );
-
-                                                        popup.style.display = "flex";
-
-                                                        return;
-                                                    }
-
-                                                    let vehicleOptions = "";
-
-                                                    cars.forEach(function(car) {
-
-                                                        vehicleOptions += `
-                        <option value="${car.licensePlate}">
-                            ${car.licensePlate}
-                            - ${car.type}
-                        </option>
-                    `;
-                                                    });
-
-                                                    const parkingAreaId =
-                                                        feature.id;
-
-                                                    const zone =
-                                                        properties.p_ordning;
-
-                                                    layer.bindPopup(`
-                    <b>${street}</b>
-                    <br>
-                    ${numberOfSpaces} parkeringspladser
-                    <br>
-                    ${parkingType}
-                    <br><br>
-
-                    <label>
-                        Vælg nummerplade:
-                    </label>
-
-                    <select
-                        id="vehicle-select"
-                        class="vehicle-select">
-
-                        ${vehicleOptions}
-
-                    </select>
-
-                    <br><br>
-
-                    <button
-                        id="confirm-parking-button"
-                        class="start-parking-button"
-                        type="button">
-
-                        Start parkering
-
-                    </button>
-                `);
-
-                                                    layer.openPopup();
-
-                                                    const popup =
-                                                        layer.getPopup();
-
-                                                    const popupElement =
-                                                        popup.getElement();
-
-                                                    const confirmButton =
-                                                        popupElement.querySelector(
-                                                            "#confirm-parking-button"
-                                                        );
-
-                                                    const vehicleSelect =
-                                                        popupElement.querySelector(
-                                                            "#vehicle-select"
-                                                        );
-
-                                                    confirmButton.addEventListener(
-                                                        "click",
-                                                        function() {
-
-                                                            const licensePlate =
-                                                                vehicleSelect.value;
-
-                                                            startParking(
-                                                                zone,
-                                                                parkingAreaId,
-                                                                licensePlate
-                                                            );
-                                                        }
-                                                    );
-                                                })
-                                                .catch(error => {
-
-                                                    console.error(
-                                                        "Fejl:",
-                                                        error
-                                                    );
-                                                });
-                                        }
-                                    );
-                                }
-                            }
-                        });
+                if (zoom >= markerZoom) {
+                    if (!parkingLayer.hasLayer(marker)) {
+                        parkingLayer.addLayer(marker);
                     }
+                } else {
+                    parkingLayer.removeLayer(marker);
+                }
+            });
+        }
 
+
+        // Lav et ikon for hvert parkeringsareal
+        matchingAreas.forEach(function(feature) {
+
+            const properties = feature.properties;
+
+            const street = properties.vejnavn || "Ukendt vej";
+            const numberOfSpaces = properties.antal_pladser || 0;
+            const parkingType = properties.p_type || "Parkering";
+
+            // Find centrum af parkeringsarealet
+            const areaLayer = L.geoJSON(feature);
+            const bounds = areaLayer.getBounds();
+
+            if (!bounds.isValid()) {
+                return;
+            }
+
+            const center = bounds.getCenter();
+
+
+            const zoneFeature = findParkingZone(center);
+
+            const zoneName = zoneFeature
+                ? zoneFeature.properties.zone_navn
+                : null;
+
+            const zonePrice = zoneFeature
+                ? zoneFeature.properties.ptakst_dag
+                : null;
+
+            const zoneDetails = zoneName && zonePrice != null
+                ? `<b>Zone:</b> ${zoneName} betalingszone<br>
+       <b>Pris:</b> ${zonePrice} kr./time`
+                : `<b>Zone og pris:</b> Kunne ikke bestemmes for denne parkeringsplads.`;
+
+            const parkingDetails = `
+    <b>${street}</b><br>
+    <b>Antal parkeringspladser:</b> ${numberOfSpaces}<br>
+    <b>Parkeringsordning:</b> ${parkingType}<br>
+    ${zoneDetails}
+`;
+
+            const parkingOrder = (properties.p_ordning || "").toLowerCase();
+
+            let iconSymbol = "🚗";
+            let categoryName = "Almindelig parkering";
+            let iconColor = "#3976D2";
+
+            if (parkingOrder.includes("elbil")) {
+                iconSymbol = "⚡";
+                categoryName = "Elbilparkering";
+                iconColor = "#269B69";
+            } else if (parkingOrder.includes("handicap")) {
+                iconSymbol = "♿";
+                categoryName = "Handicapparkering";
+                iconColor = "#8B5CC7";
+            } else if (parkingOrder.includes("delebil")) {
+                iconSymbol = "🔑";
+                categoryName = "Delebilparkering";
+                iconColor = "#E5A12B";
+            } else if (parkingOrder.includes("privat")) {
+                iconSymbol = "🔒";
+                categoryName = "Privat parkering";
+                iconColor = "#64748B";
+            } else if (parkingOrder.includes("motorcykel")) {
+                iconSymbol = "🏍️";
+                categoryName = "Motorcykelparkering";
+                iconColor = "#D85A42";
+            }
+
+
+            const parkingIcon = L.divIcon({
+                className: "parking-pin-icon",
+                html: `
+        <div style="
+            position: relative;
+            width: 40px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+        ">
+            <!-- Kortnålens spids -->
+            <div style="
+                position: absolute;
+                bottom: 2px;
+                width: 20px;
+                height: 20px;
+                background: ${iconColor};
+                transform: rotate(45deg);
+                border-radius: 0 0 4px 0;
+            "></div>
+
+            <!-- Kortnålens runde top -->
+            <div style="
+                position: absolute;
+                top: 0;
+                width: 38px;
+                height: 38px;
+                background: ${iconColor};
+                border: 2px solid white;
+                border-radius: 50%;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-sizing: border-box;
+                z-index: 1;
+            ">
+                <div style="
+                    width: 27px;
+                    height: 27px;
+                    background: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 17px;
+                    line-height: 1;
+                ">${iconSymbol}</div>
+            </div>
+        </div>
+    `,
+                iconSize: [40, 48],
+                iconAnchor: [20, 48],
+                popupAnchor: [0, -46]
+            });
+
+
+
+            const marker = L.marker(center, {
+                icon: parkingIcon,
+                showFromZoom: 18
+            });
+
+            parkingMarkers.push(marker);
+
+
+            const initialPopup = `
+    ${parkingDetails}
+    <br><br>
+
+    <label for="vehicle-select">Vælg nummerplade:</label>
+    <br>
+
+    <select id="vehicle-select" class="vehicle-select">
+        <option value="">Indlæser biler...</option>
+    </select>
+
+    <br><br>
+
+    <button class="start-parking-button" type="button" disabled>
+        Start parkering
+    </button>
+`;
+
+
+            marker.bindPopup(initialPopup);
+
+            // Håndter knapperne, når popup-vinduet åbnes
+
+            marker.on("popupopen", async function(event) {
+                const popupElement = event.popup.getElement();
+
+                if (!popupElement) {
+                    return;
                 }
 
-            ).addTo(map);
+                const button = popupElement.querySelector(
+                    ".start-parking-button"
+                );
 
+                const vehicleSelect = popupElement.querySelector(
+                    "#vehicle-select"
+                );
+
+                if (!button || !vehicleSelect) {
+                    return;
+                }
+
+                // Start-knappen er deaktiveret, indtil bilerne er hentet
+                button.disabled = true;
+                vehicleSelect.disabled = true;
+                vehicleSelect.innerHTML =
+                    '<option value="">Indlæser biler...</option>';
+
+                try {
+                    const response = await fetch("/my-vehicles");
+
+                    if (!response.ok) {
+                        throw new Error(
+                            "Kunne ikke hente biler. HTTP-status: " +
+                            response.status
+                        );
+                    }
+
+                    const cars = await response.json();
+
+                    if (cars.length === 0) {
+                        vehicleSelect.innerHTML =
+                            '<option value="">Ingen biler registreret</option>';
+
+                        const noVehiclePopup =
+                            document.getElementById("no-vehicle-popup");
+
+                        if (noVehiclePopup) {
+                            noVehiclePopup.style.display = "flex";
+                        }
+
+                        return;
+                    }
+
+                    vehicleSelect.innerHTML =
+                        '<option value="">Vælg nummerplade</option>' +
+                        cars.map(function(car) {
+                            return `
+                    <option value="${car.licensePlate}">
+                        ${car.licensePlate} - ${car.type}
+                    </option>
+                `;
+                        }).join("");
+
+                    vehicleSelect.disabled = false;
+
+                    // Brugeren skal vælge en nummerplade manuelt
+                    vehicleSelect.onchange = function() {
+                        button.disabled = vehicleSelect.value === "";
+                    };
+
+                    button.disabled = true;
+
+                    button.onclick = function(clickEvent) {
+                        clickEvent.stopPropagation();
+
+                        const licensePlate = vehicleSelect.value;
+
+                        if (!licensePlate) {
+                            alert("Vælg en nummerplade først.");
+                            return;
+                        }
+
+                        button.disabled = true;
+
+                        startParking(
+                            zoneName,
+                            parkingOrder,
+                            feature.id,
+                            licensePlate
+                        );
+                    };
+
+                } catch (error) {
+                    console.error("Fejl ved hentning af biler:", error);
+
+                    vehicleSelect.innerHTML =
+                        '<option value="">Kunne ikke hente biler</option>';
+
+                    vehicleSelect.disabled = true;
+                    button.disabled = true;
+
+                    alert("Kunne ikke hente dine biler. Prøv igen.");
+                }
+            });
+        });
+
+        updateParkingMarkers();
+
+        map.off("zoomend", updateParkingMarkers);
+        map.on("zoomend", updateParkingMarkers);
     }
+
+
 
     function startParking(
         zone,
+        parkingOrder,
         parkingAreaId,
         licensePlate
     ) {
-
-        console.log(
-            "Starter parkering..."
-        );
-
-        console.log(
-            "Zone:",
-            zone
-        );
-
-        console.log(
-            "Parkeringsareal:",
-            parkingAreaId
-        );
-
-        console.log(
-            "Nummerplade:",
-            licensePlate
-        );
+        console.log("Starter parkering...");
+        console.log("Betalingszone:", zone);
+        console.log("Parkeringsordning:", parkingOrder);
+        console.log("Parkeringsareal:", parkingAreaId);
+        console.log("Nummerplade:", licensePlate);
 
         fetch("/parking/start", {
-
             method: "POST",
-
             headers: {
-                "Content-Type":
-                    "application/x-www-form-urlencoded"
+                "Content-Type": "application/x-www-form-urlencoded"
             },
-
             body:
-                "zone=" +
-                encodeURIComponent(zone) +
-
-                "&parkingAreaId=" +
-                encodeURIComponent(parkingAreaId) +
-
-                "&licensePlate=" +
-                encodeURIComponent(licensePlate)
+                "zone=" + encodeURIComponent(zone) +
+                "&parkingOrder=" + encodeURIComponent(parkingOrder) +
+                "&parkingAreaId=" + encodeURIComponent(parkingAreaId) +
+                "&licensePlate=" + encodeURIComponent(licensePlate)
         })
             .then(response => {
-
                 if (!response.ok) {
-
-                    return response.text()
-                        .then(message => {
-
-                            throw new Error(message);
-                        });
+                    return response.text().then(message => {
+                        throw new Error(message);
+                    });
                 }
 
                 return response.text();
             })
-
             .then(data => {
-
-                alert(data);
+                window.location.href = "/active-parking";
             })
             .catch(error => {
-
-                if (
-                    error.message ===
-                    "Ingen nummerplade registreret"
-                ) {
-
-                    const goToVehicles =
-                        confirm(
-                            "🚗 Ingen nummerplade registreret.\n\n" +
-                            "Du skal registrere en nummerplade, " +
-                            "før du kan starte en parkering.\n\n" +
-                            "Vil du registrere en nu?"
-                        );
+                if (error.message === "Ingen nummerplade registreret") {
+                    const goToVehicles = confirm(
+                        "🚗 Ingen nummerplade registreret.\n\n" +
+                        "Du skal registrere en nummerplade, " +
+                        "før du kan starte en parkering.\n\n" +
+                        "Vil du registrere en nu?"
+                    );
 
                     if (goToVehicles) {
-                        window.location.href =
-                            "/vehicles";
+                        window.location.href = "/vehicles";
                     }
 
                     return;
                 }
 
-                console.error(
-                    "Fejl:",
-                    error
-                );
-
-                alert(
-                    "Der skete en fejl."
-                );
+                console.error("Fejl:", error);
+                alert("Der skete en fejl: " + error.message);
             });
     }
+
 
     const registerVehicleButton =
         document.getElementById(
@@ -802,6 +924,8 @@
         .then(response => response.json())
 
         .then(data => {
+
+            parkingZoneFeatures = data.features || [];
 
             console.log(
                 "Parkeringszoner:",
@@ -1010,6 +1134,10 @@
                 }
 
             ).addTo(map);
+
+            if (map.getZoom() >= 18) {
+                showParkingAreas("");
+            }
 
         })
 

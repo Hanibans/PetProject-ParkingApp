@@ -29,6 +29,7 @@ public class UserController {
         config.routes.get("/account", ctx -> showAccount(ctx));
         config.routes.get("/support", ctx -> ctx.redirect("/support.html"));
         config.routes.get("/menu", ctx -> ctx.redirect("/menu.html"));
+        config.routes.get("/active-parking", ctx -> ctx.render("active-parking.html"));
     }
 
     public void login(Context ctx) {

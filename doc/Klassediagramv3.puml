@@ -13,6 +13,8 @@ package entities {
     + getCars() : List<Car>
     + hasCar() : boolean
     + getPhoneNumber() : int
+    + getPassword() : int
+    + getId() : int
     + getMail() : String
   }
 

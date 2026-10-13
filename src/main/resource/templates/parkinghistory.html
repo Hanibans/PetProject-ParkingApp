@@ -71,18 +71,14 @@
 
             <div class="history-field">
                 <label>Starttidspunkt</label>
-                <span th:text="${T(java.time.Instant).parse(parking.startTime)
-                    .atZone(T(java.time.ZoneId).of('Europe/Copenhagen'))
-                    .format(T(java.time.format.DateTimeFormatter).ofPattern('d. MMMM yyyy ''kl.'' HH:mm:ss', T(java.util.Locale).forLanguageTag('da-DK')))}">
+                <span th:text="${parking.startTime}">
                     Starttidspunkt
                 </span>
             </div>
 
             <div class="history-field">
                 <label>Sluttidspunkt</label>
-                <span th:text="${T(java.time.Instant).parse(parking.endTime)
-                    .atZone(T(java.time.ZoneId).of('Europe/Copenhagen'))
-                    .format(T(java.time.format.DateTimeFormatter).ofPattern('d. MMMM yyyy ''kl.'' HH:mm:ss', T(java.util.Locale).forLanguageTag('da-DK')))}">
+                <span th:text="${parking.endTime}">
                     Sluttidspunkt
                 </span>
             </div>

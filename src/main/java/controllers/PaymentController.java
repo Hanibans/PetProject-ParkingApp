@@ -23,7 +23,6 @@ public class PaymentController {
 
     public void setRoutes(JavalinConfig config) {
         config.routes.get("/payments", ctx -> showPayments(ctx));
-        config.routes.get("/parkinghistory", ctx -> showParkingHistory(ctx));
     }
 
 

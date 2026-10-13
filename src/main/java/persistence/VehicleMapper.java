@@ -96,4 +96,36 @@ public class VehicleMapper {
             throw new DatabaseException("Bilen blev ikke slettet.");
         }
     }
+
+
+    public int getCarIdByUserIdAndLicensePlate(
+            int userId, String licensePlate) throws DatabaseException {
+
+        String sql = """
+            SELECT car_id
+            FROM car
+            WHERE user_id = ? AND license_plate = ?
+            """;
+
+        try (Connection c = connectionPool.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ps.setString(2, licensePlate);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("car_id");
+                }
+
+                throw new DatabaseException(
+                        "Bilen tilhører ikke den aktuelle bruger");
+            }
+
+        } catch (SQLException e) {
+            logger.error("Kunne ikke finde bilens ID", e);
+            throw new DatabaseException("Kunne ikke finde bilen");
+        }
+    }
+
 }

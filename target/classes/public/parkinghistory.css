@@ -13,27 +13,24 @@ body {
 .account-header {
     position: relative;
     height: 120px;
-
     background: #a477ed;
 
     display: flex;
     align-items: center;
     justify-content: center;
-
 }
 
-/* Overskrift */
 .account-header h1 {
     margin: 0;
     color: white;
     font-size: 32px;
+    text-align: center;
 }
 
 /* Tilbage-knap */
 .back-button {
     position: absolute;
     left: 25px;
-
     width: 45px;
     height: 45px;
 
@@ -43,15 +40,131 @@ body {
 
     color: white;
     text-decoration: none;
-
     font-size: 32px;
     font-weight: bold;
-
     border-radius: 50%;
-
     transition: background-color 0.2s;
 }
 
 .back-button:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Indhold */
+.account-content {
+    width: 90%;
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.account-content h2 {
+    margin-bottom: 25px;
+    color: #222;
+}
+
+/* Kort til hver parkering */
+.history-card {
+    background-color: white;
+    padding: 22px;
+    margin-bottom: 18px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Nummerplade og zone */
+.history-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.history-card-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #222;
+}
+
+/* Zone */
+.history-zone {
+    background-color: #a477ed;
+    color: white;
+    padding: 7px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+/* Oplysninger om parkeringen */
+.history-field {
+    margin-bottom: 18px;
+}
+
+.history-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #777;
+}
+
+.history-field span {
+    font-size: 16px;
+    color: #222;
+    overflow-wrap: anywhere;
+}
+
+/* Samlet pris */
+.history-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.history-total span {
+    font-size: 16px;
+    color: #222;
+}
+
+.history-total strong {
+    font-size: 18px;
+    color: #a477ed;
+}
+
+/* Ingen parkeringer */
+.history-empty {
+    background-color: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    color: #777;
+}
+
+/* Mobilvisning */
+@media (max-width: 500px) {
+    .account-header {
+        height: 100px;
+    }
+
+    .account-header h1 {
+        font-size: 23px;
+    }
+
+    .back-button {
+        left: 12px;
+    }
+
+    .account-content {
+        margin: 25px auto;
+    }
+
+    .history-card {
+        padding: 17px;
+    }
 }

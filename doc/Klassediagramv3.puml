@@ -18,20 +18,27 @@ package entities {
 
   class Car {
     - licensePlate : String
+    - type : String
+    + getType() : String
     + getLicensePlate() : String
   }
 
   class Zone {
-    - name : String
+    - zoneId : int
+    - color : String
     - pricePerHour : double
+    - totalSpots : int
     - spots : List<Parking>
-    + getName() : String
+    + getColor() : String
     + getPricePerHour() : double
+    + getTotalSpots : int
     + getSpots() : List<Parking>
+
   }
 
   class Parking {
     - label : String
+    - zone : Zone
     - available : boolean
     + isAvailable() : boolean
     + takeSpot()

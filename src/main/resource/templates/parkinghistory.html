@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -72,21 +71,25 @@
 
             <div class="history-field">
                 <label>Starttidspunkt</label>
-                <span th:text="${parking.startTime}">
+                <span th:text="${T(java.time.Instant).parse(parking.startTime)
+                    .atZone(T(java.time.ZoneId).of('Europe/Copenhagen'))
+                    .format(T(java.time.format.DateTimeFormatter).ofPattern('d. MMMM yyyy ''kl.'' HH:mm:ss', T(java.util.Locale).forLanguageTag('da-DK')))}">
                     Starttidspunkt
                 </span>
             </div>
 
             <div class="history-field">
                 <label>Sluttidspunkt</label>
-                <span th:text="${parking.endTime}">
+                <span th:text="${T(java.time.Instant).parse(parking.endTime)
+                    .atZone(T(java.time.ZoneId).of('Europe/Copenhagen'))
+                    .format(T(java.time.format.DateTimeFormatter).ofPattern('d. MMMM yyyy ''kl.'' HH:mm:ss', T(java.util.Locale).forLanguageTag('da-DK')))}">
                     Sluttidspunkt
                 </span>
             </div>
 
+
             <div class="history-total">
                 <span>Samlet pris</span>
-
                 <strong th:text="${parking.totalCost != null
                     ? parking.totalCost + ' kr.'
                     : 'Mangler betaling'}">

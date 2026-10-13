@@ -1,0 +1,55 @@
+@startuml
+!pragma layout smetana
+
+package entities {
+
+  class User {
+    - phoneNumber : String
+    - mail : String
+    - password : String
+    - id : int
+    - cars : List<Car>
+    + addCar(car : Car)
+    + getCars() : List<Car>
+    + hasCar() : boolean
+    + getPhoneNumber() : int
+    + getMail() : String
+  }
+
+  class Car {
+    - licensePlate : String
+    + getLicensePlate() : String
+  }
+
+  class Zone {
+    - name : String
+    - pricePerHour : double
+    - spots : List<Parking>
+    + getName() : String
+    + getPricePerHour() : double
+    + getSpots() : List<Parking>
+  }
+
+  class Parking {
+    - label : String
+    - available : boolean
+    + isAvailable() : boolean
+    + takeSpot()
+    + releaseSpot()
+    + getPricePerHour() : double
+  }
+
+  class Payment {
+    - startTime : LocalTime
+    + startPayment()
+    + endPayment() : double
+  }
+}
+
+
+User --> Car
+Car --> Parking
+Zone <-- Parking
+Payment <-- Parking
+
+@enduml

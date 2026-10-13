@@ -33,58 +33,7 @@ public class UserController {
         config.routes.post("/account/password", ctx -> updatePassword(ctx));
         config.routes.get("/support", ctx -> ctx.redirect("/support.html"));
         config.routes.get("/menu", ctx -> ctx.redirect("/menu.html"));
-        config.routes.get("/active-parking", ctx -> {
-            User user = ctx.sessionAttribute("user");
 
-            if (user == null) {
-                ctx.redirect("/login");
-                return;
-            }
-
-            try {
-                java.util.Map<String, Object> parking =
-                        parkingMapper.getActiveParkingForUser(user.getId());
-
-                if (parking == null) {
-                    ctx.redirect("/map.html");
-                    return;
-                }
-
-                ctx.render("active-parking.html",
-                        java.util.Map.of("parking", parking));
-
-            } catch (exceptions.DatabaseException e) {
-                ctx.status(500);
-                ctx.result(e.getMessage());
-            }
-        });
-
-        config.routes.get("/parkinghistory", ctx -> {
-            User user = ctx.sessionAttribute("user");
-
-            if (user == null) {
-                ctx.redirect("/login");
-                return;
-            }
-
-            try {
-                java.util.List<java.util.Map<String, Object>> history =
-                        new ParkingMapper(connectionPool)
-                                .getParkingHistoryForUser(user.getId());
-
-                java.util.Map<String, Object> model = new java.util.HashMap<>();
-                model.put("history", history);
-                model.put("paymentMethods",
-                        new PaymentMapper(connectionPool)
-                                .getPaymentMethods(user.getId()));
-
-                ctx.render("parkinghistory.html", model);
-
-            } catch (exceptions.DatabaseException e) {
-                ctx.status(500);
-                ctx.result(e.getMessage());
-            }
-        });
 
     }
 
@@ -133,6 +82,7 @@ public class UserController {
         }
         ctx.render("account.html", java.util.Map.of("user", user));
     }
+
 
     public void updateAccount(Context ctx) {
         User user = ctx.sessionAttribute("user");

@@ -36,6 +36,8 @@ public class ParkingController {
         config.routes.get("/parking-areas", ctx -> getParkingAreas(ctx));
         config.routes.post("/parking/start", ctx -> startParking(ctx));
         config.routes.post("/parking/stop", ctx -> stopParking(ctx));
+        config.routes.get("/active-parking", ctx -> showActiveParking(ctx));
+        config.routes.get("/parkinghistory", ctx -> showParkingHistory(ctx));
         config.routes.get("/parking/summary", ctx -> showParkingSummary(ctx));
     }
 
@@ -44,6 +46,33 @@ public class ParkingController {
         // Hent parkeringspladser
         // Send data til map.html
         ctx.redirect("/map");
+    }
+
+    public void showParkingHistory(Context ctx){
+        User user = ctx.sessionAttribute("user");
+
+        if (user == null) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        try {
+            java.util.List<java.util.Map<String, Object>> history =
+                    new ParkingMapper(connectionPool)
+                            .getParkingHistoryForUser(user.getId());
+
+            java.util.Map<String, Object> model = new java.util.HashMap<>();
+            model.put("history", history);
+            model.put("paymentMethods",
+                    new PaymentMapper(connectionPool)
+                            .getPaymentMethods(user.getId()));
+
+            ctx.render("parkinghistory.html", model);
+
+        } catch (exceptions.DatabaseException e) {
+            ctx.status(500);
+            ctx.result(e.getMessage());
+        }
     }
 
     public void getParkingZones(Context ctx) {

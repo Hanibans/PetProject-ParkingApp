@@ -75,53 +75,31 @@
   </button>
 </div>
 
-<script th:inline="javascript">
-  const startTime = new Date(
-          /*[[${parking.startTime}]]*/ ""
-  );
 
-  function updateDuration() {
-    const now = new Date();
-    const seconds = Math.max(
-            0,
-            Math.floor((now - startTime) / 1000)
-    );
+<script>
+    let timerInterval = null;
+    let elapsedSeconds = 0;
 
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
+    function startTimer() {
+        if (timerInterval !== null) {
+            return;
+        }
 
-    document.getElementById("duration").textContent =
-            String(hours).padStart(2, "0") + ":" +
-            String(minutes).padStart(2, "0") + ":" +
-            String(remainingSeconds).padStart(2, "0");
-  }
+        const timerStart = Date.now() - elapsedSeconds * 1000;
 
-  let timerInterval = null;
-  let elapsedSeconds = 0;
+        timerInterval = setInterval(function () {
+            elapsedSeconds = Math.floor((Date.now() - timerStart) / 1000);
 
-  function startTimer() {
-    if (timerInterval !== null) {
-      return;
+            const hours = Math.floor(elapsedSeconds / 3600);
+            const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+            const seconds = elapsedSeconds % 60;
+
+            document.getElementById("duration").textContent =
+                String(hours).padStart(2, "0") + ":" +
+                String(minutes).padStart(2, "0") + ":" +
+                String(seconds).padStart(2, "0");
+        }, 1000);
     }
-
-    const startTime = Date.now() - elapsedSeconds * 1000;
-
-    timerInterval = setInterval(function () {
-      elapsedSeconds = Math.floor(
-              (Date.now() - startTime) / 1000
-      );
-
-      const hours = Math.floor(elapsedSeconds / 3600);
-      const minutes = Math.floor((elapsedSeconds % 3600) / 60);
-      const seconds = elapsedSeconds % 60;
-
-      document.getElementById("duration").textContent =
-              String(hours).padStart(2, "0") + ":" +
-              String(minutes).padStart(2, "0") + ":" +
-              String(seconds).padStart(2, "0");
-    }, 1000);
-  }
 </script>
 
 

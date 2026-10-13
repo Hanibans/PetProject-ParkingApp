@@ -1,6 +1,9 @@
 package persistence;
 
 import entities.Zone;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import exceptions.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -303,12 +306,25 @@ public class ParkingMapper {
                             rs.getString("zone_name"));
                     parking.put("parkingSpotType",
                             rs.getString("parking_spot_type"));
+                    DateTimeFormatter formatter =
+                            DateTimeFormatter.ofPattern(
+                                    "d. MMMM yyyy 'kl.' HH:mm:ss",
+                                    new Locale("da", "DK")
+                            );
+
+                    ZoneId zoneId = ZoneId.of("Europe/Copenhagen");
+
                     parking.put("startTime",
                             rs.getTimestamp("parking_start_time")
-                                    .toInstant().toString());
+                                    .toInstant()
+                                    .atZone(zoneId)
+                                    .format(formatter));
+
                     parking.put("endTime",
                             rs.getTimestamp("parking_end_time")
-                                    .toInstant().toString());
+                                    .toInstant()
+                                    .atZone(zoneId)
+                                    .format(formatter));
                     parking.put("pricePerHour",
                             rs.getBigDecimal("price_per_hour"));
                     parking.put("totalCost",

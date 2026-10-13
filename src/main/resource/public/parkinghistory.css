@@ -123,8 +123,19 @@ body {
     align-items: center;
     gap: 15px;
 
-    padding-top: 16px;
+    padding: 16px 0;
     border-top: 1px solid #eee;
+}
+
+.history-total span {
+    font-size: 15px;
+    color: #777;
+}
+
+.history-total strong {
+    font-size: 20px;
+    color: #a477ed;
+    white-space: nowrap;
 }
 
 .history-total span {
@@ -167,4 +178,125 @@ body {
     .history-card {
         padding: 17px;
     }
+}
+
+/* Farver på parkeringszonerne i historikken */
+.history-zone.zone-rød {
+    background-color: #ff575d;
+    color: black;
+}
+
+.history-zone.zone-blå {
+    background-color: #5b9bd5;
+    color: white;
+}
+
+.history-zone.zone-grøn {
+    background-color: #91dd72;
+    color: black;
+}
+
+.history-zone.zone-gul {
+    background-color: #f9df76;
+    color: black;
+}
+
+/* Betalingsstatus og betalingsknap */
+.history-payment {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.history-payment-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.history-payment-label {
+    font-size: 14px;
+    color: #777;
+}
+
+.history-payment-badge {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.status-paid {
+    background-color: #e3f4df;
+    color: #315b45;
+}
+
+.status-pending {
+    background-color: #fff0d5;
+    color: #8a5700;
+}
+
+.history-pay-form {
+    margin: 0;
+}
+
+.history-pay-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background-color: #a477ed;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.history-pay-button:hover {
+    opacity: 0.85;
+}
+
+.history-pay-form select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: white;
+    color: #333;
+    font-size: 14px;
+}
+
+.history-pay-form label {
+    display: block;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.history-no-cards {
+    padding: 12px;
+    background-color: #f7f2ff;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.history-no-cards p {
+    margin: 0 0 10px;
+    color: #555;
+}
+
+.history-no-cards a {
+    color: #8053c7;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.history-no-cards a:hover {
+    text-decoration: underline;
 }

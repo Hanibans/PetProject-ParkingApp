@@ -22,7 +22,7 @@ public class VehicleMapper {
 
     public List<Car> getCarsByUserId(int userId) throws DatabaseException {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT license_plate, car_type FROM car WHERE user_id = ?";
+        String sql = "SELECT license_plate, car_type FROM car WHERE user_id = ? AND is_active = TRUE";
         try (Connection c = connectionPool.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -57,7 +57,7 @@ public class VehicleMapper {
 
 
     public boolean licensePlateExists(String licensePlate) throws DatabaseException {
-        String sql = "SELECT 1 FROM car WHERE license_plate = ?";
+        String sql = "SELECT 1 FROM car WHERE license_plate = ? AND is_active = TRUE";
         try (Connection c = connectionPool.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, licensePlate);
@@ -71,13 +71,35 @@ public class VehicleMapper {
     }
 
     public void addCar(int userId, String licensePlate, String carType) throws DatabaseException {
-        String sql = "INSERT INTO car (license_plate, car_type, user_id) VALUES (?, ?, ?)";
+        String sql = """
+            UPDATE car
+            SET car_type = ?, is_active = TRUE
+            WHERE user_id = ? AND license_plate = ? AND is_active = FALSE
+            """;
+
         try (Connection c = connectionPool.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, licensePlate);
-            ps.setString(2, carType);
-            ps.setInt(3, userId);
-            ps.executeUpdate();
+
+            ps.setString(1, carType);
+            ps.setInt(2, userId);
+            ps.setString(3, licensePlate);
+
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                String insertSql = """
+                    INSERT INTO car (license_plate, car_type, user_id)
+                    VALUES (?, ?, ?)
+                    """;
+
+                try (PreparedStatement insertPs = c.prepareStatement(insertSql)) {
+                    insertPs.setString(1, licensePlate);
+                    insertPs.setString(2, carType);
+                    insertPs.setInt(3, userId);
+                    insertPs.executeUpdate();
+                }
+            }
+
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DatabaseException("Bilen blev ikke gemt");
@@ -85,18 +107,29 @@ public class VehicleMapper {
     }
 
     public void removeCar(int userId, String licensePlate) throws DatabaseException {
-        String sql = "DELETE FROM car WHERE user_id = ? AND license_plate = ?";
+        String sql = """
+            UPDATE car
+            SET is_active = FALSE
+            WHERE user_id = ? AND license_plate = ?
+            """;
+
         try (Connection c = connectionPool.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
+
             ps.setInt(1, userId);
             ps.setString(2, licensePlate);
-            ps.executeUpdate();
+
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                throw new DatabaseException("Bilen blev ikke fundet.");
+            }
+
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DatabaseException("Bilen blev ikke slettet.");
         }
     }
-
 
     public int getCarIdByUserIdAndLicensePlate(
             int userId, String licensePlate) throws DatabaseException {

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/parking.css">
+    <title>Afsluttet parkering</title>
+</head>
+<body class="parking-summary-page">
+
+<h1>Din parkering er afsluttet</h1>
+
+<div class="summary-card">
+    <h2>Oversigt</h2>
+
+    <p>
+        <strong>Bil:</strong>
+        <span th:text="${parking.licensePlate}">AB12345</span>
+    </p>
+
+    <p>
+        <strong>Adresse:</strong>
+        <span th:text="${parking.address}">Parkeringsadresse</span>
+    </p>
+
+    <p>
+        <strong>Parkeringszone:</strong>
+        <span th:text="${parking.zoneName}">Blå</span>
+    </p>
+
+    <p>
+        <strong>Starttidspunkt:</strong>
+        <span th:text="${parking.startTime}">Starttidspunkt</span>
+    </p>
+
+    <p>
+        <strong>Sluttidspunkt:</strong>
+        <span th:text="${parking.endTime}">Sluttidspunkt</span>
+    </p>
+
+    <p>
+        <strong>Samlet pris:</strong>
+        <span th:text="${#numbers.formatDecimal(parking.totalCost, 1, 2)} + ' kr.'">
+            0,00 kr.
+        </span>
+    </p>
+</div>
+
+<hr>
+
+<h2>Betaling</h2>
+
+<button type="button" id="payNowButton">Betal nu</button>
+<button type="button" id="payLaterButton">Betal senere</button>
+
+<!-- Popup til betaling -->
+<div id="paymentPopup" style="display: none; border: 1px solid #888;
+    padding: 20px; margin-top: 20px; max-width: 450px;">
+
+    <h2>Betal for parkeringen</h2>
+
+    <p>Vælg et gemt betalingskort, eller tilføj et nyt.</p>
+
+    <label for="savedCard">Mine betalingskort</label><br>
+
+    <select id="savedCard">
+        <option value="">Indlæser betalingskort...</option>
+    </select>
+
+    <p>
+        <button type="button" id="addCardButton">
+            Tilføj nyt kort
+        </button>
+    </p>
+
+    <div id="newCardForm" style="display: none;">
+        <h3>Tilføj simuleret kort</h3>
+
+        <p>
+            Brug kun testoplysninger. Indtast ikke dit rigtige
+            kortnummer eller din CVV-kode.
+        </p>
+
+        <label for="cardholderName">Kortholderens navn</label><br>
+        <input type="text" id="cardholderName" maxlength="100"><br><br>
+
+        <label for="cardBrand">Korttype</label><br>
+        <select id="cardBrand">
+            <option value="Visa">Visa</option>
+            <option value="Mastercard">Mastercard</option>
+        </select><br><br>
+
+        <label for="cardLastFour">Testkortets sidste fire cifre</label><br>
+        <input type="text" id="cardLastFour"
+               inputmode="numeric" maxlength="4"
+               pattern="[0-9]{4}" placeholder="1234"><br><br>
+
+        <button type="button" id="saveCardButton">
+            Gem testkort
+        </button>
+    </div>
+
+    <hr>
+
+    <button type="button" id="confirmPaymentButton">
+        Bekræft betaling
+    </button>
+
+    <button type="button" id="closePaymentPopup">
+        Luk
+    </button>
+
+    <p id="paymentMessage"></p>
+</div>
+
+<script th:inline="javascript">
+    const parkingId = /*[[${parking.parkingId}]]*/ 0;
+
+    const popup = document.getElementById("paymentPopup");
+    const newCardForm = document.getElementById("newCardForm");
+    const savedCard = document.getElementById("savedCard");
+    const paymentMessage = document.getElementById("paymentMessage");
+
+    document.getElementById("payNowButton").addEventListener("click", async function () {
+        popup.style.display = "block";
+        await loadPaymentMethods();
+    });
+
+    document.getElementById("closePaymentPopup").addEventListener("click", function () {
+        popup.style.display = "none";
+        paymentMessage.textContent = "";
+    });
+
+    document.getElementById("addCardButton").addEventListener("click", function () {
+        newCardForm.style.display =
+            newCardForm.style.display === "none" ? "block" : "none";
+    });
+
+    document.getElementById("payLaterButton").addEventListener("click", function () {
+        window.location.href = "/parkinghistory";
+    });
+
+    async function loadPaymentMethods() {
+        savedCard.innerHTML = '<option value="">Indlæser kort...</option>';
+
+        try {
+            const response = await fetch("/payments/methods");
+
+            if (!response.ok) {
+                throw new Error("Kunne ikke hente betalingskortene.");
+            }
+
+            const methods = await response.json();
+            savedCard.innerHTML = "";
+
+            if (methods.length === 0) {
+                savedCard.add(new Option("Du har ingen gemte kort", ""));
+                return;
+            }
+
+            savedCard.add(new Option("Vælg et kort", ""));
+
+            methods.forEach(function (method) {
+                const label = method.cardBrand + " •••• " +
+                    method.cardLastFour + " (" +
+                    method.cardholderName + ")";
+
+                savedCard.add(new Option(label, method.paymentMethodId));
+            });
+
+        } catch (error) {
+            savedCard.innerHTML = "";
+            savedCard.add(new Option("Kunne ikke hente kort", ""));
+            paymentMessage.textContent = error.message;
+        }
+    }
+
+    document.getElementById("saveCardButton").addEventListener("click", async function () {
+        const cardholderName = document.getElementById("cardholderName").value.trim();
+        const cardBrand = document.getElementById("cardBrand").value;
+        const cardLastFour = document.getElementById("cardLastFour").value.trim();
+
+        if (!cardholderName || !/^\d{4}$/.test(cardLastFour)) {
+            paymentMessage.textContent =
+                "Indtast et navn og præcis fire cifre til testkortet.";
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append("cardholderName", cardholderName);
+        formData.append("cardBrand", cardBrand);
+        formData.append("cardLastFour", cardLastFour);
+
+        try {
+            const response = await fetch("/payments/methods/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: formData.toString()
+            });
+
+            if (!response.ok) {
+                const message = await response.text();
+                throw new Error(message || "Kunne ikke gemme testkortet.");
+            }
+
+            paymentMessage.textContent = "Testkortet er gemt!";
+            document.getElementById("newCardForm").style.display = "none";
+
+            document.getElementById("cardholderName").value = "";
+            document.getElementById("cardLastFour").value = "";
+
+            await loadPaymentMethods();
+
+        } catch (error) {
+            paymentMessage.textContent = "Fejl: " + error.message;
+        }
+    });
+
+    document.getElementById("confirmPaymentButton").addEventListener("click", async function () {
+        const paymentMethodId = document.getElementById("savedCard").value;
+
+        if (!paymentMethodId) {
+            paymentMessage.textContent = "Vælg et betalingskort først.";
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append("parkingId", parkingId);
+        formData.append("paymentMethodId", paymentMethodId);
+
+        try {
+            const response = await fetch("/payments/pay", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: formData.toString()
+            });
+
+            if (!response.ok) {
+                const message = await response.text();
+                throw new Error(message || "Betalingen kunne ikke gennemføres.");
+            }
+
+            const result = await response.json();
+
+            paymentMessage.textContent = result.message;
+            document.getElementById("confirmPaymentButton").disabled = true;
+
+            window.location.href = "/payment-success";
+
+        } catch (error) {
+            paymentMessage.textContent = "Fejl: " + error.message;
+        }
+    });
+</script>
+
+</body>
+</html>

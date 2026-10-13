@@ -173,8 +173,8 @@ public class ParkingMapper {
                         "* z.price_per_hour / 3600.0 AS total_cost";
 
         String paymentSql =
-                "INSERT INTO payment (total_cost, parking_id) " +
-                        "VALUES (?, ?)";
+                "INSERT INTO payment (total_cost, parking_id, payment_status) " +
+                        "VALUES (?, ?, 'Afventer')";
 
         try (Connection c = connectionPool.getConnection()) {
 
@@ -265,14 +265,16 @@ public class ParkingMapper {
             throws DatabaseException {
 
         String sql =
-                "SELECT p.parking_start_time, " +
+                "SELECT p.parking_id, " +
+                        "p.parking_start_time, " +
                         "p.parking_end_time, " +
                         "c.license_plate, " +
                         "p.parking_address, " +
                         "z.name AS zone_name, " +
                         "z.price_per_hour, " +
                         "pst.name AS parking_spot_type, " +
-                        "pay.total_cost " +
+                        "pay.total_cost, " +
+                        "pay.payment_status " +
                         "FROM parking p " +
                         "JOIN car c ON p.car_id = c.car_id " +
                         "JOIN zone z ON p.zone_id = z.zone_id " +
@@ -325,10 +327,14 @@ public class ParkingMapper {
                                     .toInstant()
                                     .atZone(zoneId)
                                     .format(formatter));
+                    parking.put("parkingId",
+                            rs.getInt("parking_id"));
                     parking.put("pricePerHour",
                             rs.getBigDecimal("price_per_hour"));
                     parking.put("totalCost",
                             rs.getBigDecimal("total_cost"));
+                    parking.put("paymentStatus",
+                            rs.getString("payment_status"));
 
                     history.add(parking);
                 }
@@ -341,5 +347,24 @@ public class ParkingMapper {
             throw new DatabaseException(
                     "Kunne ikke hente parkeringshistorikken.");
         }
+    }
+
+
+    public java.util.Map<String, Object> getParkingHistoryEntry(
+            int parkingId,
+            int userId
+    ) throws DatabaseException {
+
+        java.util.List<java.util.Map<String, Object>> history =
+                getParkingHistoryForUser(userId);
+
+        for (java.util.Map<String, Object> parking : history) {
+            if (Integer.valueOf(parkingId).equals(
+                    parking.get("parkingId"))) {
+                return parking;
+            }
+        }
+
+        return null;
     }
 }

@@ -72,8 +72,13 @@ public class UserController {
                         new ParkingMapper(connectionPool)
                                 .getParkingHistoryForUser(user.getId());
 
-                ctx.render("parkinghistory.html",
-                        java.util.Map.of("history", history));
+                java.util.Map<String, Object> model = new java.util.HashMap<>();
+                model.put("history", history);
+                model.put("paymentMethods",
+                        new PaymentMapper(connectionPool)
+                                .getPaymentMethods(user.getId()));
+
+                ctx.render("parkinghistory.html", model);
 
             } catch (exceptions.DatabaseException e) {
                 ctx.status(500);

@@ -1,6 +1,6 @@
 package entities;
 
-public abstract class Parking {
+public class Parking {
 
     private String label;
     private Zone zone;

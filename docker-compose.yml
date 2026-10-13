@@ -1,0 +1,54 @@
+# Localhost Docker Compose fil for 2. semester på datamatiker uddannelsen i Lyngby 
+# Opretter to containere: 
+# db: Postgresql data base server som kører på port 5432
+# pgadmin: Webbaseret interface til brug af Postgres. Den tilgås på port 8080
+
+services:
+
+  db:
+    image: postgres:16.2
+    container_name: db
+    mem_limit: 1536MB
+    mem_reservation: 1024MB
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: Europe/Copenhagen
+    volumes:
+      - ./data:/var/lib/postgresql/data/
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    mem_reservation: 512MB
+    mem_limit: 1024MB
+    restart: unless-stopped
+    depends_on:
+      - db
+    volumes:
+      - ./pgadmin-data:/pgadmin
+    ports:
+      - "8080:80"
+    networks:
+      - backend
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ek.dk
+      PGADMIN_DEFAULT_PASSWORD: 1234
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'  # skip extra prompt (dev only)
+      PGADMIN_CONFIG_MAX_LOGIN_ATTEMPTS: 0              # disable lockout on failed logins
+      TZ: Europe/Copenhagen
+
+networks:
+  backend:
+    name: backend
+    internal: false # in production, it should be true if you don't want to expose this network to the outside world
+    driver: bridge
+
+volumes:
+  pgadmin-data:

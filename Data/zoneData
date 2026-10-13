@@ -1,5 +1,0 @@
-zones, pricePerHour, totalSpots, disabledParkingSpot, elCarParkingSpot, regularParkingSpot, sharingCarParkingSpot, privateArea
-Rød, 37, 20000, 1000, 2000, 15000, 500, 1500
-Blå, 20, 20000, 1200, 1800, 16000, 500, 500
-Grøn, 11, 15000, 1000, 1500, 12500, 0, 0,
-Gul, 17, 15000, 2000, 2000, 9000, 1000, 1000

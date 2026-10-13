@@ -36,5 +36,4 @@ public abstract class Parking {
         return zone.getPricePerHour();
     }
 
-    public abstract String getSpotTypes();
 }

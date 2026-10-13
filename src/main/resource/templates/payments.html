@@ -1,15 +1,124 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Min betaling</title>
 
     <link rel="stylesheet" href="/payments.css">
     <link rel="stylesheet" href="/colors.css">
 </head>
-<body>
+<body class="account-page">
 
+<header class="account-header">
+    <a href="/menu" class="back-button" aria-label="Tilbage til menu">←</a>
+    <h1>Min betaling</h1>
+</header>
+
+<main class="account-content">
+
+    <div th:if="${hasParkingId}" class="parking-payment-info">
+        <h2>Betaling for parkering</h2>
+        <p>
+            Parkerings-ID:
+            <span th:text="${parkingId}">0</span>
+        </p>
+        <p>Vælg et af dine simulerede betalingskort nedenfor.</p>
+    </div>
+
+    <h2>Mine betalingsmetoder</h2>
+
+    <div th:if="${#lists.isEmpty(paymentMethods)}" class="empty-methods">
+        <p>Du har endnu ikke tilføjet en betalingsmetode.</p>
+    </div>
+
+    <div th:each="method : ${paymentMethods}" class="account-field">
+
+        <p>
+            <strong th:text="${method.cardBrand}">Korttype</strong>
+            •••• <span th:text="${method.cardLastFour}">0000</span>
+        </p>
+
+        <p>
+            Kortholder:
+            <span th:text="${method.cardholderName}">Navn</span>
+        </p>
+
+        <form action="/payments/methods/delete" method="post">
+            <input type="hidden"
+                   name="paymentMethodId"
+                   th:value="${method.paymentMethodId}">
+
+            <button type="submit" class="delete-card-button">
+                Fjern kort
+            </button>
+        </form>
+
+        <form th:if="${hasParkingId}"
+              action="/payments/pay"
+              method="post"
+              class="pay-form">
+
+            <input type="hidden"
+                   name="parkingId"
+                   th:value="${parkingId}">
+
+            <input type="hidden"
+                   name="paymentMethodId"
+                   th:value="${method.paymentMethodId}">
+
+            <button type="submit" class="pay-button">
+                Vælg og betal
+            </button>
+        </form>
+    </div>
+
+    <hr>
+
+    <h2>Tilføj simuleret betalingskort</h2>
+
+    <p class="test-card-info">
+        Brug testoplysninger. Indtast ikke dit rigtige kortnummer
+        eller din CVV-kode.
+    </p>
+
+    <form action="/payments/methods/add"
+          method="post"
+          class="account-field add-payment-form">
+
+        <input type="hidden"
+               name="parkingId"
+               th:if="${hasParkingId}"
+               th:value="${parkingId}">
+
+        <label for="cardholderName">Kortholderens navn</label>
+        <input type="text"
+               id="cardholderName"
+               name="cardholderName"
+               required
+               maxlength="100">
+
+        <label for="cardBrand">Korttype</label>
+        <select id="cardBrand" name="cardBrand" required>
+            <option value="Visa">Visa</option>
+            <option value="Mastercard">Mastercard</option>
+        </select>
+
+        <label for="cardLastFour">Testkortets sidste fire cifre</label>
+        <input type="text"
+               id="cardLastFour"
+               name="cardLastFour"
+               required
+               inputmode="numeric"
+               pattern="[0-9]{4}"
+               maxlength="4"
+               placeholder="1234">
+
+        <button type="submit" class="add-card-button">
+            Tilføj kort
+        </button>
+    </form>
+
+</main>
 </body>
 </html>

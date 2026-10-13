@@ -803,7 +803,8 @@
                             parkingOrder,
                             feature.id,
                             licensePlate,
-                            street
+                            street,
+                            zonePrice
                         );
                     };
 
@@ -827,66 +828,32 @@
         map.on("zoomend", updateParkingMarkers);
     }
 
-
-
     function startParking(
         zone,
         parkingOrder,
         parkingAreaId,
         licensePlate,
-        street
+        street,
+        pricePerHour
     ) {
-        console.log("Starter parkering...");
-        console.log("Betalingszone:", zone);
-        console.log("Parkeringsordning:", parkingOrder);
-        console.log("Parkeringsareal:", parkingAreaId);
-        console.log("Nummerplade:", licensePlate);
+        // Gem brugerens valg midlertidigt i browseren.
+        const selectedParking = {
+            zone: zone,
+            parkingOrder: parkingOrder,
+            parkingAreaId: parkingAreaId,
+            licensePlate: licensePlate,
+            street: street,
+            pricePerHour: pricePerHour
+        };
 
-        fetch("/parking/start", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body:
-                "zone=" + encodeURIComponent(zone) +
-                "&parkingOrder=" + encodeURIComponent(parkingOrder) +
-                "&parkingAreaId=" + encodeURIComponent(parkingAreaId) +
-                "&licensePlate=" + encodeURIComponent(licensePlate) +
-                "&street=" + encodeURIComponent(street)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(message => {
-                        throw new Error(message);
-                    });
-                }
+        sessionStorage.setItem(
+            "selectedParking",
+            JSON.stringify(selectedParking)
+        );
 
-                return response.text();
-            })
-            .then(data => {
-                window.location.href = "/active-parking";
-            })
-            .catch(error => {
-                if (error.message === "Ingen nummerplade registreret") {
-                    const goToVehicles = confirm(
-                        "🚗 Ingen nummerplade registreret.\n\n" +
-                        "Du skal registrere en nummerplade, " +
-                        "før du kan starte en parkering.\n\n" +
-                        "Vil du registrere en nu?"
-                    );
-
-                    if (goToVehicles) {
-                        window.location.href = "/vehicles";
-                    }
-
-                    return;
-                }
-
-                console.error("Fejl:", error);
-                alert("Der skete en fejl: " + error.message);
-            });
+        // Gå videre uden at oprette parkeringen i databasen.
+        window.location.href = "/active-parking";
     }
-
 
     const registerVehicleButton =
         document.getElementById(

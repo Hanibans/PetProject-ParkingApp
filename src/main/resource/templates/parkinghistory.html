@@ -48,6 +48,9 @@
                 </h3>
 
                 <span class="history-zone"
+                      th:classappend="${parking.zoneName != null
+                        ? ' zone-' + #strings.toLowerCase(parking.zoneName)
+                        : ''}"
                       th:text="${parking.zoneName}">
                     Blå
                 </span>
@@ -93,11 +96,133 @@
                 </strong>
             </div>
 
+            <div class="history-payment">
+
+                <div class="history-payment-status">
+                    <span class="history-payment-label">Betalingsstatus</span>
+
+                    <span class="history-payment-badge"
+                          th:classappend="${parking.paymentStatus == 'Betalt'
+                  ? ' status-paid'
+                  : ' status-pending'}"
+                          th:text="${parking.paymentStatus == 'Betalt'
+                  ? 'Betalt'
+                  : 'Afventer betaling'}">
+            Afventer betaling
+        </span>
+                </div>
+
+                <div th:if="${parking.paymentStatus == 'Afventer'}"
+                     class="history-payment-action"
+                     th:attr="data-parking-id=${parking.parkingId}">
+
+                    <button type="button"
+                            class="history-pay-button"
+                            onclick="showPaymentOptions(this)">
+                        Betal nu
+                    </button>
+
+                    <form action="/payments/pay"
+                          method="post"
+                          class="history-pay-form"
+                          hidden>
+
+                        <input type="hidden"
+                               name="parkingId"
+                               th:value="${parking.parkingId}">
+
+                        <label th:for="${'paymentMethod-' + parking.parkingId}">
+                            Vælg betalingskort
+                        </label>
+
+                        <select name="paymentMethodId"
+                                th:id="${'paymentMethod-' + parking.parkingId}"
+                                th:if="${!#lists.isEmpty(paymentMethods)}"
+                                required>
+
+                            <option value="" disabled selected>Vælg et kort</option>
+
+                            <option th:each="method : ${paymentMethods}"
+                                    th:value="${method.paymentMethodId}"
+                                    th:text="${method.cardBrand + ' •••• ' + method.cardLastFour}">
+                                Visa •••• 1234
+                            </option>
+                        </select>
+
+                        <button type="submit"
+                                class="history-pay-button"
+                                th:if="${!#lists.isEmpty(paymentMethods)}">
+                            Bekræft betaling
+                        </button>
+
+                        <p class="history-payment-message"
+                           role="alert"
+                           hidden></p>
+
+                        <div th:if="${#lists.isEmpty(paymentMethods)}"
+                             class="history-no-cards">
+
+                            <p>Du har ikke tilføjet et betalingskort endnu.</p>
+                            <a href="/payments">Tilføj et betalingskort</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
         </div>
 
     </div>
 
 </div>
+
+<script>
+    function showPaymentOptions(button) {
+        const container = button.closest(".history-payment-action");
+        const form = container.querySelector(".history-pay-form");
+
+        form.hidden = !form.hidden;
+        button.textContent = form.hidden
+            ? "Betal nu"
+            : "Skjul betalingsmuligheder";
+    }
+
+    document.querySelectorAll(".history-pay-form").forEach(function (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const message = form.querySelector(".history-payment-message");
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            message.hidden = true;
+            submitButton.disabled = true;
+
+            try {
+                const formData = new URLSearchParams(new FormData(form));
+
+                const response = await fetch("/payments/pay", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || "Betalingen kunne ikke gennemføres.");
+                }
+
+                window.location.href = "/payment-success";
+
+            } catch (error) {
+                message.textContent = "Fejl: " + error.message;
+                message.hidden = false;
+                submitButton.disabled = false;
+            }
+        });
+    });
+</script>
 
 </body>
 

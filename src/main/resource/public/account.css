@@ -11,13 +11,10 @@ body {
 .account-header {
     position: relative;
     height: 120px;
-
     background: #ff575d;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
 }
 
 .account-header h1 {
@@ -29,22 +26,16 @@ body {
 .back-button {
     position: absolute;
     left: 25px;
-
     width: 45px;
     height: 45px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     color: white;
     text-decoration: none;
-
     font-size: 32px;
     font-weight: bold;
-
     border-radius: 50%;
-
     transition: background-color 0.2s;
 }
 
@@ -55,7 +46,6 @@ body {
 .account-content {
     width: 90%;
     max-width: 600px;
-
     margin: 40px auto;
 }
 
@@ -65,55 +55,65 @@ body {
 
 .account-field {
     background-color: white;
-
     padding: 20px;
     margin-bottom: 18px;
-
     border-radius: 15px;
-
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
 .account-field label {
     display: block;
-
     margin-bottom: 10px;
-
     font-size: 14px;
     color: #777;
 }
 
 .field-row {
     display: flex;
-
     align-items: center;
     justify-content: space-between;
-
     gap: 15px;
 }
 
 .field-row span {
     font-size: 17px;
     color: #222;
-
     overflow-wrap: anywhere;
 }
 
 .field-row button {
     border: none;
-
     padding: 9px 18px;
-
     border-radius: 10px;
-
-    background-color: var(#ff575d);
+    background-color: #d93640;
     color: white;
-
     font-size: 14px;
-
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .field-row button:hover {
-    opacity: 0.85;
+    background-color: #bd2933;
+}
+
+/* Inputfelter på kontosiden */
+.account-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #333;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.account-field input:focus {
+    border-color: #d93640;
+    box-shadow: 0 0 0 3px rgba(217, 54, 64, 0.12);
 }

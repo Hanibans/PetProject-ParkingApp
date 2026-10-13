@@ -36,7 +36,7 @@ public class ParkingController {
         config.routes.get("/parking-areas", ctx -> getParkingAreas(ctx));
         config.routes.post("/parking/start", ctx -> startParking(ctx));
         config.routes.post("/parking/stop", ctx -> stopParking(ctx));
-
+        config.routes.get("/parking/summary", ctx -> showParkingSummary(ctx));
     }
 
     public void showParking(Context ctx) {
@@ -86,7 +86,6 @@ public class ParkingController {
             ctx.result("Fejl: " + e.getMessage());
         }
     }
-
 
     private void getParkingAreas(Context ctx) {
         String baseUrl =
@@ -287,12 +286,67 @@ public class ParkingController {
 
             ctx.json(java.util.Map.of(
                     "message", "Parkeringen er stoppet.",
+                    "parkingId", parkingId,
                     "totalCost", totalCost
             ));
 
         } catch (exceptions.DatabaseException e) {
             ctx.status(400);
             ctx.result(e.getMessage());
+        }
+    }
+
+    public void showActiveParking(Context ctx) {
+        User user = ctx.sessionAttribute("user");
+
+        if (user == null) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        ctx.render("active-parking.html");
+    }
+
+    public void showParkingSummary(Context ctx) {
+        User user = ctx.sessionAttribute("user");
+
+        if (user == null) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        String parkingIdParam = ctx.queryParam("parkingId");
+
+        if (parkingIdParam == null || parkingIdParam.isBlank()) {
+            ctx.status(400);
+            ctx.result("Parkerings-ID mangler.");
+            return;
+        }
+
+        try {
+            int parkingId = Integer.parseInt(parkingIdParam);
+
+            java.util.Map<String, Object> parking =
+                    parkingMapper.getParkingHistoryEntry(
+                            parkingId,
+                            user.getId()
+                    );
+
+            if (parking == null) {
+                ctx.status(404);
+                ctx.result("Parkeringen blev ikke fundet.");
+                return;
+            }
+
+            ctx.attribute("parking", parking);
+            ctx.render("parking-summary.html");
+
+        } catch (NumberFormatException e) {
+            ctx.status(400);
+            ctx.result("Ugyldigt parkerings-ID.");
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result("Kunne ikke hente parkeringsoversigten.");
         }
     }
 }

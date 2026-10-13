@@ -1,0 +1,67 @@
+.payment-success-page {
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #f8f5fc;
+    font-family: Arial, sans-serif;
+}
+
+.payment-success-card {
+    width: 100%;
+    max-width: 450px;
+    padding: 40px 30px;
+    box-sizing: border-box;
+    text-align: center;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.payment-success-check {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #e5f6e9;
+    color: #2e8b57;
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.payment-success-card h1 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 26px;
+}
+
+.payment-success-card p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.payment-success-redirect {
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.payment-success-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    background-color: #8053c7;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.payment-success-button:hover {
+    background-color: #6940ad;
+}

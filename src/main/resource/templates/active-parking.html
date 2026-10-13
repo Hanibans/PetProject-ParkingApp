@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/parking.css">
   <title>Aktiv parkering</title>
 </head>
 <body>
@@ -10,34 +11,31 @@
 
 <p>
   <strong>Nummerplade:</strong>
-  <span th:text="${parking.licensePlate}">Nummerplade</span>
+  <span id="licensePlate">Nummerplade</span>
 </p>
 
 <p>
   <strong>Zone:</strong>
-  <span th:text="${parking.zoneName}">Zone</span>
+  <span id="zoneName">Zone</span>
 </p>
 
 <p><strong>Sted:</strong>
-  <span th:text="${parking.address != null ? parking.address : 'Ukendt adresse'}">
-        Ukendt adresse
-    </span>
+  <span id="parkingAddress">Ukendt adresse</span>
 </p>
 
 <p>
   <strong>Timepris:</strong>
-  <span th:text="${parking.pricePerHour + ' kr./time'}">Pris</span>
+  <span id="pricePerHour">Pris</span>
 </p>
 
 <p>
   <strong>Parkeringsordning:</strong>
-  <span th:text="${parking.parkingSpotType}">Parkeringsordning</span>
+  <span id="parkingOrder">Parkeringsordning</span>
 </p>
 
 <p>
   <strong>Starttidspunkt:</strong>
-  <span id="startTime"
-        th:text="${parking.startTime}">Starttidspunkt</span>
+  <span id="startTime">Ikke startet endnu</span>
 </p>
 
 <p>
@@ -45,9 +43,37 @@
   <span id="duration">00:00:00</span>
 </p>
 
-<button id="stopParkingButton" type="button">
-  Stop parkering
-</button>
+<div class="parking-actions">
+  <button id="startParkingButton" type="button">
+    Start parkering
+  </button>
+
+  <button id="stopParkingButton" type="button" hidden>
+    Stop parkering
+  </button>
+</div>
+
+<div id="stopSummary" style="display: none;">
+  <h2>Parkeringen er afsluttet</h2>
+
+  <p>
+    <strong>Samlet parkeringstid:</strong>
+    <span id="finalDuration">00:00:00</span>
+  </p>
+
+  <p>
+    <strong>Samlet pris:</strong>
+    <span id="finalCost">0.00</span> kr.
+  </p>
+
+  <button id="payNowButton" type="button">
+    Betal nu
+  </button>
+
+  <button id="payLaterButton" type="button">
+    Betal senere
+  </button>
+</div>
 
 <script th:inline="javascript">
   const startTime = new Date(
@@ -71,12 +97,103 @@
             String(remainingSeconds).padStart(2, "0");
   }
 
-  updateDuration();
-  setInterval(updateDuration, 1000);
+  let timerInterval = null;
+  let elapsedSeconds = 0;
+
+  function startTimer() {
+    if (timerInterval !== null) {
+      return;
+    }
+
+    const startTime = Date.now() - elapsedSeconds * 1000;
+
+    timerInterval = setInterval(function () {
+      elapsedSeconds = Math.floor(
+              (Date.now() - startTime) / 1000
+      );
+
+      const hours = Math.floor(elapsedSeconds / 3600);
+      const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+      const seconds = elapsedSeconds % 60;
+
+      document.getElementById("duration").textContent =
+              String(hours).padStart(2, "0") + ":" +
+              String(minutes).padStart(2, "0") + ":" +
+              String(seconds).padStart(2, "0");
+    }, 1000);
+  }
 </script>
 
 
 <script>
+  document.getElementById("startParkingButton")
+          .addEventListener("click", async function () {
+            const button = this;
+
+            const selectedParkingText =
+                    sessionStorage.getItem("selectedParking");
+
+            if (!selectedParkingText) {
+              alert("Ingen parkeringsplads valgt. Gå tilbage til kortet.");
+              window.location.href = "/map";
+              return;
+            }
+
+            const selectedParking = JSON.parse(selectedParkingText);
+
+            button.disabled = true;
+            button.textContent = "Starter parkering...";
+
+            try {
+              const response = await fetch("/parking/start", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                  zone: selectedParking.zone || "",
+                  parkingOrder: selectedParking.parkingOrder || "",
+                  parkingAreaId: selectedParking.parkingAreaId || "",
+                  licensePlate: selectedParking.licensePlate || "",
+                  street: selectedParking.street || ""
+                }).toString()
+              });
+
+              if (!response.ok) {
+                const message = await response.text();
+                throw new Error(message);
+              }
+
+              const now = new Date();
+
+              const date = now.toLocaleDateString("da-DK", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+              });
+
+              const time = now.toLocaleTimeString("da-DK", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+              });
+
+              document.getElementById("startTime").textContent =
+                      date + " kl. " + time;
+
+              startTimer();
+
+              button.hidden = true;
+              document.getElementById("stopParkingButton").hidden = false;
+
+            } catch (error) {
+              alert("Kunne ikke starte parkeringen: " + error.message);
+              button.disabled = false;
+              button.textContent = "Start parkering";
+            }
+          });
+
   document.getElementById("stopParkingButton")
           .addEventListener("click", async function () {
 
@@ -96,14 +213,8 @@
 
               const result = await response.json();
 
-              alert(
-                      "Parkeringen er stoppet!\n" +
-                      "Samlet pris: " +
-                      Number(result.totalCost).toFixed(2) +
-                      " kr."
-              );
-
-              window.location.href = "/parkinghistory";
+              window.location.href =
+                      "/parking/summary?parkingId=" + result.parkingId;
 
             } catch (error) {
               alert("Fejl: " + error.message);
@@ -111,6 +222,33 @@
               button.textContent = "Stop parkering";
             }
           });
+</script>
+
+<script>
+  const selectedParkingText =
+          sessionStorage.getItem("selectedParking");
+
+  if (!selectedParkingText) {
+    alert("Ingen parkeringsplads valgt. Vælg en plads på kortet igen.");
+    window.location.href = "/map";
+  } else {
+    const selectedParking = JSON.parse(selectedParkingText);
+
+    document.getElementById("licensePlate").textContent =
+            selectedParking.licensePlate || "Ukendt";
+
+    document.getElementById("zoneName").textContent =
+            selectedParking.zone || "Ukendt";
+
+    document.getElementById("parkingAddress").textContent =
+            selectedParking.street || "Ukendt adresse";
+
+    document.getElementById("pricePerHour").textContent =
+            (selectedParking.pricePerHour ?? "Ukendt") + " kr./time";
+
+    document.getElementById("parkingOrder").textContent =
+            selectedParking.parkingOrder || "Almindelig";
+  }
 </script>
 
 </body>

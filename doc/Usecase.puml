@@ -4,7 +4,7 @@
 
 actor "User" as U
 
-rectangle "Streaming Service System" {
+rectangle "Parking app system" {
   usecase "UC0: StartApplication" as UC0
   usecase "UC1: CreateUser" as UC1
   usecase "UC2: LogIn" as UC2

@@ -1,0 +1,32 @@
+@startuml
+
+@startuml
+
+!pragma layout smetana
+
+actor "User" as U
+
+rectangle "Parking app system" {
+  usecase "UC0: StartApplication" as UC0
+  usecase "UC1: CreateUser" as UC1
+  usecase "UC2: Login" as UC2
+  usecase "UC3: Map" as UC3
+  usecase "UC4: findAvailableParking" as UC4
+  usecase "UC5: addLicense" as UC5
+  usecase "UC6: Payment" as UC6
+  usecase "UC7: EndParking" as UC7
+}
+
+U --> UC0
+
+UC0 --> UC1
+UC0 --> UC2
+UC1 --> UC3
+UC2 --> UC3
+UC3 --> UC4
+UC4 --> UC6
+UC6 --> UC7
+
+UC5 .> UC4 : tilføj nummerplade ved ny bruger
+
+@enduml

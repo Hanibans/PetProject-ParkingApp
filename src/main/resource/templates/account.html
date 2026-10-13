@@ -14,17 +14,11 @@
 
 <div class="account-page">
 
-    <!-- Toppen -->
     <div class="account-header">
-
         <a href="/menu" class="back-button">←</a>
-
         <h1>Min konto</h1>
-
     </div>
 
-
-    <!-- Kontooplysninger -->
     <div class="account-content">
 
         <h2>Kontooplysninger</h2>
@@ -36,47 +30,119 @@
             <div class="field-row">
                 <span th:text="${user.mail}"></span>
 
-                <button type="button" onclick="editField('email')">
+                <button type="button"
+                        onclick="editField('email')">
                     Ændr
                 </button>
             </div>
+
+            <form id="email-form"
+                  action="/account/update"
+                  method="post"
+                  style="display: none;">
+
+                <input type="hidden" name="field" value="email">
+
+                <input type="email"
+                       name="value"
+                       th:value="${user.mail}"
+                       placeholder="Ny email"
+                       required>
+
+                <button type="submit">Gem</button>
+                <button type="button"
+                        onclick="cancelEdit('email')">
+                    Annuller
+                </button>
+            </form>
         </div>
 
-
-        <!-- Telefonnummer -->
+        <!-- Mobilnummer -->
         <div class="account-field">
-            <label>Telefonnummer</label>
+            <label>Mobilnummer</label>
 
             <div class="field-row">
                 <span th:text="${user.phoneNumber}"></span>
 
-                <button type="button" onclick="editField('phone')">
+                <button type="button"
+                        onclick="editField('phone')">
                     Ændr
                 </button>
             </div>
+
+            <form id="phone-form"
+                  action="/account/update"
+                  method="post"
+                  style="display: none;">
+
+                <input type="hidden" name="field" value="phone">
+
+                <input type="tel"
+                       name="value"
+                       th:value="${user.phoneNumber}"
+                       placeholder="Nyt mobilnummer"
+                       required>
+
+                <button type="submit">Gem</button>
+                <button type="button"
+                        onclick="cancelEdit('phone')">
+                    Annuller
+                </button>
+            </form>
         </div>
 
-
-        <!-- Password -->
+        <!-- Adgangskode -->
         <div class="account-field">
             <label>Adgangskode</label>
 
             <div class="field-row">
                 <span>••••••••</span>
 
-                <button type="button" onclick="editField('password')">
+                <button type="button"
+                        onclick="editField('password')">
                     Ændr
                 </button>
             </div>
+
+            <form id="password-form"
+                  action="/account/password"
+                  method="post"
+                  style="display: none;">
+
+                <input type="password"
+                       name="newPassword"
+                       placeholder="Ny adgangskode"
+                       minlength="8"
+                       autocomplete="new-password"
+                       required>
+
+                <input type="password"
+                       name="confirmPassword"
+                       placeholder="Gentag ny adgangskode"
+                       minlength="8"
+                       autocomplete="new-password"
+                       required>
+
+                <button type="submit">Gem</button>
+                <button type="button"
+                        onclick="cancelEdit('password')">
+                    Annuller
+                </button>
+            </form>
         </div>
 
     </div>
-
 </div>
 
 <script>
     function editField(field) {
-        alert("Ændring af " + field + " kommer snart.");
+        document.getElementById(field + '-form').style.display = 'block';
+    }
+
+    function cancelEdit(field) {
+        const form = document.getElementById(field + '-form');
+        form.reset();
+        form.style.display = 'none';
     }
 </script>
 

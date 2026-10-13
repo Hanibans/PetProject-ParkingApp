@@ -120,4 +120,61 @@ public class UserMapper {
         return false;
     }
 
+
+    public void updateEmail(int userId, String newEmail)
+            throws DatabaseException {
+        String sql = "UPDATE users SET mail = ? WHERE user_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, newEmail);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            logger.error("Kunne ikke ændre email", e);
+            throw new DatabaseException("Kunne ikke ændre email. Kontrollér, om emailen allerede bruges.", e);
+        }
+    }
+
+    public void updatePhoneNumber(int userId, String newPhoneNumber)
+            throws DatabaseException {
+        String sql = "UPDATE users SET phone_number = ? WHERE user_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, newPhoneNumber);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            logger.error("Kunne ikke ændre telefonnummer", e);
+            throw new DatabaseException("Kunne ikke ændre telefonnummer.", e);
+        }
+    }
+
+    public void updatePassword(int userId, String newPassword)
+            throws DatabaseException {
+        String sql = "UPDATE users SET password = ? WHERE user_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, newPassword);
+            ps.setInt(2, userId);
+
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                throw new DatabaseException("Brugeren blev ikke fundet.");
+            }
+
+        } catch (SQLException e) {
+            logger.error("Kunne ikke ændre adgangskode", e);
+            throw new DatabaseException("Kunne ikke ændre adgangskoden.", e);
+        }
+    }
+
 }

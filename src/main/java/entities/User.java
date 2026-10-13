@@ -40,6 +40,18 @@ public class User {
         return password;
     }
 
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public int getId() {
         return id;
     }

@@ -79,4 +79,19 @@ public class UserService {
         }
     }
 
+    public void validateNewEmail(String email)
+            throws IllegalUserDataException {
+        validateEmail(email);
+    }
+
+    public void validateNewPhoneNumber(String phoneNumber)
+            throws IllegalUserDataException {
+        validatePhoneNumber(phoneNumber);
+    }
+
+    public void validateNewPassword(String password)
+            throws IllegalUserDataException {
+        validatePassword(password);
+    }
+
 }
